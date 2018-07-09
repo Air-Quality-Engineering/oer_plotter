@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>
+		Distribution
+	</title>
+	<link rel="stylesheet" href="assets/css/jquery-ui.min.css">
+	<style>
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
+		#container{
+			height:100%;
+		}
+		#plots {
+			float: left;
+			width: 60%;
+			height: 100%;
+			box-sizing: border-box;
+			padding: 10px;
+		}
+		
+		#efficiency-plot{
+			height:50%;
+		}
+		
+		#distribution-plot{
+			height:50%;
+		}
+		
+		#data {
+			float: right;
+			width: 40%;
+			height: 100%;
+			overflow-y: auto;
+			box-sizing: border-box;
+			padding: 10px;
+		}
+
+		table{
+			border-collapse: collapse;
+		}
+		
+		table th{
+			padding: 5px;
+		}
+		table, th ,td{
+			border: 1px solid black;
+		}
+		
+		table td{
+			padding: 10px;
+			text-align: center;
+		}
+		table tbody td input{
+			width:100%;
+			box-sizing: border-box;
+		}
+		
+		#variables div{
+			margin-top: 10px;
+		}
+		
+		.form-group {
+			display: table;
+		}
+		
+		label,
+		input {
+			display: table-cell;
+		}
+		
+		#formula-display {
+			text-align: center;
+		}
+	</style>
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({ tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}, "HTML-CSS": { scale: 150, linebreaks: { automatic: true } }, SVG: { linebreaks: { automatic:true } }, displayAlign: "left" });
+	</script>
+</head>
+
+<body>
+
+	<div id="container">
+		<div id="plots">
+			<div id='efficiency-plot'>
+			</div>
+			<div id="distribution-plot">
+			</div>
+		</div>
+		<div id="data">
+			<table id="table">
+				<thead>
+					<th>Lower Bound ($\mu m$) </th>
+					<th>Upper Bound ($\mu m$) </th>
+					<th>Mid-Diameter ($\mu m$) </th>
+					<th>Inlet weight distribution (weight basis) </th>
+					<th>Efficiency (fraction) </th>
+					<th>Outlet PSD (%) </th>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="lower_bound">
+							<input autocomplete='off'/>
+						</td>
+						<td class="upper_bound">
+							<input autocomplete='off'/>
+						</td>
+						<td class="mid_diameter">
+						</td>
+						<td class="inlet_psd">
+							<input autocomplete='off'/>
+						</td>
+						<td class="efficiency"></td>
+						<td class="outlet_psd"></td>
+					</tr>
+				</tbody>
+			</table>
+			<h2>$\eta_{overall}$: <span id="sum_mi_eta" s></span> %</h2>
+			<h4>Variables:</h4>
+			<div id="variables">
+			</div>
+		</div>
+	</div>
+
+	<div id="value-template" class="form-group" style="display: none;">
+		<label></label>
+		<input />
+		<div class="slider">
+		</div>
+	</div>
+	
+	<!--  JAVASCRIPT INCLUDES   -->
+	<!-- Plugins and Libraries -->
+	<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
+	<script type='text/javascript' src='assets/js/math.min.js'></script>
+	<script type="text/javascript" async
+          src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+	<script type="text/javascript" async
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full"></script>
+
+	<!-- Project files -->
+	<script type='text/javascript' src="config/config.js"></script>
+	<script type='text/javascript' src="config/formulas.js"></script>
+	<script type='text/javascript' src="assets/js/main.js"></script>
+	<script type="text/javascript" src="assets/js/distribution.js"></script>
+
+	<script>
+		
+		$(document).ready(function() {
+			init();
+		});
+
+	</script>
+</body>
+
+</html>
