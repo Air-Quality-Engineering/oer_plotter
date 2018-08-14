@@ -1,3 +1,6 @@
+// Particle size ranges and other minimum and maximum values were 
+// changed to reflect realistic values when analysing air quality control devices. 
+
 var formulas = {
 	'default':{	'rg': {
 		name: "Gas Density",
@@ -15,14 +18,15 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35
 			},
 			't': {
 				name: "Temperature",
 				"default": 298,
 				unit: "K",
 				tex: "T",
-				"slider-min": 273,
+				"slider-min": 233,
 				"slider-max": 473
 			},
 		},
@@ -62,7 +66,7 @@ var formulas = {
 			"mug",	
 		],
 		constants: {
-//			pi: math.pi,
+			pi: math.pi,
 			r2: 8314
 		},
 		vars:{
@@ -80,10 +84,11 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35
 			},
 		},
-		equation: "(mug/(0.499*(p*1.01325*10^5)*sqrt(8*mw/(3.1415 * r2 * t))))*10^6",
+		equation: "(mug/(0.499*(p*1.01325*10^5)*sqrt(8*mw/(pi * r2 * t))))*10^6",
 		tex: "\\lambda_g = \\frac{\\mu_g}{0.499P\\sqrt{\\frac{8MW}{\\pi RT}}}",
 	},
 	"kn":{
@@ -96,7 +101,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},	
@@ -114,7 +119,7 @@ var formulas = {
 					name: "Particle Size",
 					"default": 1,
 					unit: "um",
-					"slider-min": 0,
+					"slider-min": 0.001,
 					"slider-max": 100,
 					tex: "d_p"
 				},
@@ -147,7 +152,7 @@ var formulas = {
 			}
 	},
 },
-/*
+
 	'chamber': {
 		'ac': {
 			name: "Collection Area",
@@ -158,17 +163,17 @@ var formulas = {
 					unit: "m",
 					tex: "L",
 					"slider-min": 1,
-					"slider-max": 50,
-					'slider-step': 1,
+					"slider-max": 30,
+					"slider-step": 0.5
 				},
 				"w": {
 					name: "Width",
 					"default": 1,
 					unit: "m",
 					tex: "W",
-					"slider-min": 1,
-					"slider-max": 50,
-					//step : 1
+					"slider-min": 0.5,
+					"slider-max": 10,
+					"slider-step": 0.5
 				},
 				"n": {
 					name: "Number of Channels",
@@ -176,8 +181,8 @@ var formulas = {
 					unit: "",
 					tex: "n",
 					"slider-min": 1,
-					"slider-max": 50,
-					//step : 1
+					"slider-max": 15,
+					"slider-step": 1
 				},
 			},
 			equation: "l * n * w",
@@ -193,7 +198,7 @@ var formulas = {
 					name: "Particle Size",
 					"default": 1,
 					unit: "um",
-					"slider-min": 0,
+					"slider-min": 0.001,
 					"slider-max": 100,
 					tex: "d_p"
 				},
@@ -257,7 +262,7 @@ var formulas = {
 					"default": 1,
 					unit: "m^3/s",
 					"slider-min": 0,
-					"slider-max": 100,
+					"slider-max": 15,
 					tex: "Q_g"
 				},
 				'h': {
@@ -266,7 +271,7 @@ var formulas = {
 					unit: "m",
 					tex: "H",
 					"slider-min": 1,
-					"slider-max": 50,
+					"slider-max": 50
 				},
 				"n": {
 					name: "Number of Channels",
@@ -274,15 +279,17 @@ var formulas = {
 					unit: "",
 					tex: "n",
 					"slider-min": 1,
-					"slider-max": 50,
+					"slider-max": 15,
+					"slider-step": 1
 				},
 				"w": {
 					name: "Width",
 					"default": 1,
 					unit: "m",
 					tex: "W",
-					"slider-min": 1,
-					"slider-max": 50,
+					"slider-min": 0.5,
+					"slider-max": 10,
+					"slider-step": 0.5
 				},
 			},
 			tex: "Re_{chamber} = \\frac{2Q_g \\rho_g}{(n W + H)\\mu_g}",
@@ -304,7 +311,8 @@ var formulas = {
 					"default": 29,
 					unit: "g/mol",
 					tex: "MW",
-					slider: false,
+					"slider-max": 35,
+					"slider-min": 25
 				},
 				't': {
 					name: "Temperature",
@@ -351,7 +359,7 @@ var formulas = {
 				"mug",
 			],
 			constants: {
-//				pi: math.pi,
+				pi: math.pi,
 				r2: 8314
 			},
 			vars: {
@@ -369,10 +377,11 @@ var formulas = {
 					"default": 29,
 					unit: "g/mol",
 					tex: "MW",
-					slider: false,
+					"slider-min": 25,
+					"slider-max": 35
 				},
 			},
-			equation: "(mug/(0.499*(p*1.01325*10^5)*sqrt(8*mw/(3.1415 * r2 * t))))*10^6",
+			equation: "(mug/(0.499*(p*1.01325*10^5)*sqrt(8*mw/(pi * r2 * t))))*10^6",
 			tex: "\\lambda_g = \\frac{\\mu_g}{0.499P\\sqrt{\\frac{8MW}{\\pi RT}}}",
 		},
 		"kn": {
@@ -385,7 +394,7 @@ var formulas = {
 					name: "Particle Size",
 					"default": 1,
 					unit: "um",
-					"slider-min": 0,
+					"slider-min": 0.001,
 					"slider-max": 100,
 					tex: "d_p"
 				},
@@ -405,17 +414,17 @@ var formulas = {
 				unit: "m",
 				tex: "L",
 				"slider-min": 1,
-				"slider-max": 50,
-				//step : 1
+				"slider-max": 10,
+				"slider-step": 0.5
 			},
 			"h": {
 				name: "Height",
 				"default": 1,
 				unit: "m",
 				tex: "H",
-				"slider-min": 1,
-				"slider-max": 50,
-				//step : 1
+				"slider-min": 0.5,
+				"slider-max": 15,
+				"slider-step": 0.5
 			},
 			"n": {
 				name: "Number of Channels",
@@ -423,8 +432,8 @@ var formulas = {
 				unit: "",
 				tex: "n",
 				"slider-min": 1,
-				"slider-max": 50,
-				//step : 1
+				"slider-max": 15,
+				"slider-step": 1
 			},
 		},
 		equation: "2*n*h*l",
@@ -441,7 +450,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},
@@ -518,8 +527,9 @@ var formulas = {
 				"default": 1,
 				unit: "m",
 				tex: "H",
-				"slider-min": 1,
-				"slider-max": 50,
+				"slider-min": 0.5,
+				"slider-max": 15,
+				"slider-step": 0.5
 			},
 			"n": {
 				name: "Number of Channels",
@@ -527,17 +537,17 @@ var formulas = {
 				unit: "",
 				tex: "n",
 				"slider-min": 1,
-				"slider-max": 50,
-				//step : 1
+				"slider-max": 15,
+				"slider-step": 1
 			},
 			"d": {
 				name: "Distance between plates",
 				"default": 1,
 				unit: "m",
 				tex: "D",
-				"slider-min": 1,
-				"slider-max": 50,
-				//step : 1
+				"slider-min": 0.2,
+				"slider-max": 0.5,
+				"slider-step": 0.05
 			},
 		},
 		tex: "Re_{ESP} = \\frac{2Q_g \\rho_g}{n (D + H)\\mu_g}",
@@ -561,7 +571,8 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35
 			},
 			't': {
 				name: "Temperature",
@@ -626,7 +637,8 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35
 			},
 		},
 		equation: "(mug/(0.499*(p*1.01325*10^5)*sqrt(8*mw/(pi * r2 * t))))*10^6",
@@ -642,7 +654,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},	
@@ -682,7 +694,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},	
@@ -797,7 +809,8 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35,
 			},
 			't': {
 				name: "Temperature",
@@ -862,7 +875,8 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35,
 			},
 		},
 		equation: "(mug/(0.499*(p*1.01325*10^5)*sqrt(8*mw/(pi * r2 * t))))*10^6",
@@ -878,7 +892,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},	
@@ -900,7 +914,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},	
@@ -917,7 +931,7 @@ var formulas = {
 				"default": 1,
 				unit: "m^3/s",
 				"slider-min": 0,
-				"slider-max": 100,
+				"slider-max": 15,
 				tex: "Q_g"
 			},
 			"w": {
@@ -957,7 +971,7 @@ var formulas = {
 				"default": 1,
 				unit: "um",
 				"slider-min": 0.1,
-				"slider-max": 2,
+				"slider-max": 3,
 				tex: "D_o"
 			},
 		},
@@ -980,7 +994,7 @@ var formulas = {
 				name: "Particle Size",
 				"default": 1,
 				unit: "um",
-				"slider-min": 0,
+				"slider-min": 0.001,
 				"slider-max": 100,
 				tex: "d_p"
 			},	
@@ -1027,7 +1041,7 @@ var formulas = {
 				"default": 1,
 				unit: "m^3/s",
 				"slider-min": 0,
-				"slider-max": 100,
+				"slider-max": 15,
 				tex: "Q_g"
 			},
 			'l1': {
@@ -1051,7 +1065,7 @@ var formulas = {
 				"default": 1,
 				unit: "um",
 				"slider-min": 0.1,
-				"slider-max": 2,
+				"slider-max": 3,
 				tex: "D_o"
 			},
 		},
@@ -1077,7 +1091,7 @@ var formulas = {
 				"default": 1,
 				unit: "m^3/s",
 				"slider-min": 0,
-				"slider-max": 100,
+				"slider-max": 15,
 				tex: "Q_g"
 			},
 			"w": {
@@ -1101,7 +1115,7 @@ var formulas = {
 				"default": 1,
 				unit: "um",
 				"slider-min": 0.1,
-				"slider-max": 2,
+				"slider-max": 3,
 				tex: "D_o"
 			},
 			'de': {
@@ -1150,7 +1164,8 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35,
 			},
 			't': {
 				name: "Temperature",
@@ -1259,7 +1274,7 @@ var formulas = {
 	},
 
 	'uad': {
-		name: "Velcoity of adsorption zone",
+		name: "Velocity of adsorption zone",
 		subs: [
 				 "rg",
 		],
@@ -1273,7 +1288,7 @@ var formulas = {
 			tex: "\\dot{m}_{g,T}"
 			},	
 			'rads': {
-				name: "apparent desnity",
+				name: "apparent density",
 				"default": 0.5,
 				unit: "",
 				"slider-min": 0,
@@ -1281,7 +1296,7 @@ var formulas = {
 				tex: "\\rho_{ad}"
 			},	
 			'acsa': {
-				name: "Corss sectional area",
+				name: "Cross sectional area",
 				"default": 1,
 				unit: "m^2",
 				"slider-min": 0,
@@ -1341,7 +1356,7 @@ var formulas = {
 				tex: "K"
 			},	
 			'acsa': {
-				name: "Corss sectional area",
+				name: "Cross sectional area",
 				"default": 1,
 				unit: "m^2",
 				"slider-min": 0,
@@ -1400,7 +1415,8 @@ var formulas = {
 				"default": 29,
 				unit: "g/mol",
 				tex: "MW",
-				slider: false,
+				"slider-min": 25,
+				"slider-max": 35,
 			},
 			't': {
 				name: "Temperature",
@@ -1418,5 +1434,4 @@ var formulas = {
 		tex: "\\rho_g = \\frac{P MW}{R T}",
 	},
 	},
-	*/  //    /*  */ 
 	};
