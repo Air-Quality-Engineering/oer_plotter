@@ -122,6 +122,7 @@ function setup_formula_interface() {
 		group.removeAttr('id');
 		group.find('label').html("$" + variable.tex + "$: ");
 		group.find('input').val(variable.default || 0).attr('name', key);
+		group.find('span.variable-units').html("$" + variable.unit + "$");
 		group.appendTo("#values");
 
 		if(variable.slider === undefined || variable.slider === true) {
