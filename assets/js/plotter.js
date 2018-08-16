@@ -105,9 +105,10 @@ function setup_formula_interface() {
 	var formula = state.formula;
 	//first off, display the name of the formula
 	$("#formula-name").html(formula.name);
-	//second, display the formula itself
-	$("#formula-display").html("$" + formula.tex + "$");
-
+	//second, display the formula itself 
+	$("#formula-display").html("$" + formula.tex + "$")
+	//third, display the units of the calculated result
+	$("#formula-unit").html("$" + formula.unit + "$");
 	//clear the previous value groups
 	$("#values").html("");
 
