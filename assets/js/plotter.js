@@ -1,3 +1,7 @@
+// CW: some advice on creating dynamic image (src is the path to the image).
+// https://stackoverflow.com/questions/8013792/how-to-create-a-new-img-tag-with-jquery-with-the-src-and-id-from-a-javascript-o
+
+
 //contains the plot object for future method calls
 var plot;
 //keep track of the current state of the app
@@ -18,6 +22,7 @@ function init() {
 	//load the specific formulas group and set that as the global variable formulas
 	var formulas_group = _GET('unit', 'default');
 	formulas = formulas[formulas_group];
+	images = images[formulas_group];
 	
 	populate_options();
 
@@ -370,9 +375,10 @@ function update() {
 	}]);
 	plot.setupGrid();
 	plot.draw();
-	update_output_value();
+	// update_output_value();
 }
 
+/*
 function update_output_value() {
    var is_constant = true;
    var initial_value = state.dataset[0];
@@ -386,3 +392,4 @@ function update_output_value() {
    else {
    }
 }
+*/

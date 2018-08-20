@@ -926,7 +926,7 @@ var formulas = {
 
 	'cyclone':{
 	'eta_cyclone_theoretical': {
-		name: "Cyclone Efficiency,thoretical",
+		name: "Cyclone Efficiency,thoreticalish",
 		subs: [
 			'mug',
 		],
