@@ -206,6 +206,13 @@ function gen_dataset(formula, vars, realTicks) {
 			y = undefined;
 		dataset.push([x, y]);
 	});
+	console.log("---------------------------------------")
+	console.log(formula);
+	console.log(vars);
+	console.log(realTicks);
+	console.log(vars);
+
+        console.trace();
 	return dataset;
 }
 
@@ -363,4 +370,19 @@ function update() {
 	}]);
 	plot.setupGrid();
 	plot.draw();
+	update_output_value();
+}
+
+function update_output_value() {
+   var is_constant = true;
+   var initial_value = state.dataset[0];
+   for (value in state.dataset) {
+      if value != initial_value {
+          is_constant = false;
+      }
+   }
+   if (is_constant) {
+   }
+   else {
+   }
 }
