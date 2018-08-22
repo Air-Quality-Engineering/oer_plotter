@@ -11,7 +11,6 @@ var state = {
 	yaxis_fix: false,
 	formula: undefined,
 	dataset: [],
-	output: []
 };
 
 function init() {
@@ -78,7 +77,7 @@ function init() {
  * @author Adel Wehbi
  */
 function populate_options() {
-	//fill in default options in their respective inputs 
+	//fill in default options in their respective inputs
 	if(state.xaxis_type == 'normal') {
 		$('#startx').val(config.defaults.start);
 		$('#endx').val(config.defaults.end);
@@ -106,7 +105,7 @@ function setup_formula_interface() {
 	$("#formula-name").html(formula.name);
 	//second, display the formula itself 
 	$("#formula-display").html("$" + formula.tex + "$")
-	//fourth, display the output value units
+	//third, display the output value units
 	$("#formula-unit").html("$" + formula.unit + "$")
 	//clear the previous value groups
 	$("#values").html("");
@@ -149,7 +148,6 @@ function setup_formula_interface() {
 	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 }
 
-
 /**
  * Collects the variable values from the interface. Result is set in the global state object.
  * @author Adel Wehbi
@@ -163,7 +161,6 @@ function get_vars() {
 	});
 	return vars;
 }
-
 
 /**
  * Collects the options values from the interface, and adds them to the global state object.
