@@ -66,6 +66,7 @@
 </head>
 
 <body>
+        <button id='cyclone'>cyclone</button>
 
 	<div id="container">
 		<div id="graph">
@@ -167,7 +168,10 @@
 
 	<script>
 		$(document).ready(function() {
-			init();
+			init('default');
+                        $('#cyclone').on('click', function() {
+                            init('cyclone');
+                        });
 		});
 
 	</script>

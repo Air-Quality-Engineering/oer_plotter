@@ -13,11 +13,11 @@ var state = {
 	dataset: []
 };
 
-function init() {
+function init(formulas_group) {
 	
 	//load the specific formulas group and set that as the global variable formulas
-	var formulas_group = _GET('unit', 'default');
-	formulas = formulas[formulas_group];
+	// var formulas_group = _GET('unit', 'default');
+	formulas = all_formulas[formulas_group];
 	
 	populate_options();
 
@@ -26,6 +26,7 @@ function init() {
 
 	//the select element
 	var select = $('#select_formula');
+	select.html('');
 
 	select.append('<option>--------------</option>');
 	//fill up the drop down with pre-defined formulas.

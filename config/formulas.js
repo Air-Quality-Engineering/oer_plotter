@@ -2,7 +2,7 @@
 // changed to reflect realistic values when analysing air quality control devices.
 // Units were added for calculated results to aid user to interpret answer  
 
-var formulas = {
+var all_formulas = {
 	'default':{	'rg': {
 		name: "Gas Density",
 		vars: {
