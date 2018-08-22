@@ -10,7 +10,8 @@ var state = {
 	yaxis_type: 'normal',
 	yaxis_fix: false,
 	formula: undefined,
-	dataset: []
+	dataset: [],
+	output: []
 };
 
 function init() {
@@ -72,13 +73,12 @@ function init() {
 	plot = $.plot($('#graph'), [[]]);
 }
 
-
 /**
  * Populates the option fields in the interface from the config defaults.
  * @author Adel Wehbi
  */
 function populate_options() {
-	//fill in default options in their respective inputs
+	//fill in default options in their respective inputs 
 	if(state.xaxis_type == 'normal') {
 		$('#startx').val(config.defaults.start);
 		$('#endx').val(config.defaults.end);
@@ -95,7 +95,6 @@ function populate_options() {
 		$('#endy').val(config.defaults.log_yend);
 	}
 }
-
 /**
  * Setups the interface for the formula and its values.
  * @author Adel Wehbi
@@ -107,8 +106,8 @@ function setup_formula_interface() {
 	$("#formula-name").html(formula.name);
 	//second, display the formula itself 
 	$("#formula-display").html("$" + formula.tex + "$")
-	//third, display the units of the calculated result
-	$("#formula-unit").html("$" + formula.unit + "$");
+	//fourth, display the output value units
+	$("#formula-unit").html("$" + formula.unit + "$")
 	//clear the previous value groups
 	$("#values").html("");
 
@@ -149,6 +148,7 @@ function setup_formula_interface() {
 	//and add it the the MathJax queue in order for it to render nicely
 	MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 }
+
 
 /**
  * Collects the variable values from the interface. Result is set in the global state object.
@@ -208,7 +208,6 @@ function gen_dataset(formula, vars, realTicks) {
 	});
 	return dataset;
 }
-
 /**
  * This function generates the ticks used for display purposes.
  * @author Adel Wehbi
@@ -355,6 +354,8 @@ function update() {
 			(state.xaxis_type == 'logarithmic')
 		)
 	);
+	gen_output_value();
+	setup_output_interface();
 	configure_xaxis();
 	configure_yaxis();
 	plot.setData([{
@@ -363,4 +364,27 @@ function update() {
 	}]);
 	plot.setupGrid();
 	plot.draw();
-}
+} 
+// Pulls the calculated result from the state.dataset array if the user inputs are all numbers
+// @author Chris Want and Gabriella Wahl  
+function gen_output_value () {
+	variables = state.dataset
+	output_value = variables[0][1];
+	for (var i = 0; i < variables.length; i++) {
+		if(variables[i][1] !== variables[0][1]) { 
+			output_value = " "
+			return output_value; 
+		}
+	}
+	return output_value;
+};
+
+function setup_output_interface() {
+	output = output_value;
+	console.log(output_value)
+	if (output != " ") {
+		output = output_value.toPrecision(5)
+	} 
+	$("#output").html(output);
+	return output;
+};

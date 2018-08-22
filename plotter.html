@@ -64,19 +64,24 @@
 	</script>
 
 </head>
-
 <body>
-
+	</div>
 	<div id="container">
 		<div id="graph">
 		</div>
 		<div id="data">
+					</ul>
+					<div id="default">
+						<div class="form-group">
+					</div>
+			</div>
 			<div id="options">
 				<h4>Options:</h4>
 				<div id="tabs">
 					<ul>
 						<li><a href="#xaxis">X-Axis</a></li>
 						<li><a href="#yaxis">Y-Axis</a></li>
+						<li><a href="#Diagram">Diagram</a></li>
 					</ul>
 					<!-- Contents of First Tab -->
 					<div id="xaxis">
@@ -127,14 +132,22 @@
 								<input id="endy" />
 							</div>
 						</div>
-					</div>
+					<!-- Contents of Third Tab -->
+					<div id="Diagram">
+						<div class="form-group">
+							<label>
+								<span id="image-name"></span>
+							</label>	
+						</div>
+					<span id="image-diagram"></span>
 				</div>
 			</div>
 
 			<select id="select_formula" style="width:100%; margin-top:10px;"></select>
 
 			<h4>Formula: <span id="formula-name"></span></h4>
-			<div id="formula-display"></div><span id="formula-unit"></span>
+			<div id="formula-display">
+			</div>Result: <span id="output"></span><span id= "formula-unit"></span>
 			<div id="values">
 			</div>
 		</div>
