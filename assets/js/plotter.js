@@ -365,11 +365,11 @@ function update() {
 // Pulls the calculated result from the state.dataset array if the user inputs are all numbers
 // @author Chris Want and Gabriella Wahl  
 function gen_output_value () {
-	variables = state.dataset
+	variables = state.dataset;
 	output_value = variables[0][1];
 	for (var i = 0; i < variables.length; i++) {
 		if(variables[i][1] !== variables[0][1]) { 
-			output_value = " "
+			output_value = " ";
 			return output_value; 
 		}
 	}
@@ -378,9 +378,8 @@ function gen_output_value () {
 
 function setup_output_interface() {
 	output = output_value;
-	console.log(output_value)
 	if (output != " ") {
-		output = output_value.toPrecision(5)
+		output = output_value.toPrecision(5);
 	} 
 	$("#output").html(output);
 	return output;
