@@ -9,9 +9,15 @@ var state = {
 	xaxis_type: 'normal',
 	yaxis_type: 'normal',
 	yaxis_fix: false,
+	formula_id: undefined,
 	formula: undefined,
 	dataset: []
 };
+
+function needs_cunningham_kludge() {
+	var vars = get_vars();
+	return ((state.formula_id == 'kc') && (vars["dp"].includes('x')));
+}
 
 function init() {
 	
@@ -39,6 +45,7 @@ function init() {
 	//when a different formula is selected from the dropdown
 	select.on('change', function () {
 		var formula_id = $(this).val();
+		state.formula_id = formula_id;
 		state.formula = formulas[formula_id];
 		setup_formula_interface();
 		update();
@@ -172,6 +179,12 @@ function get_vars() {
 function get_options() {
 	state.minx = parseFloat($('#startx').val());
 	state.maxx = parseFloat($('#endx').val());
+        if (needs_cunningham_kludge()) {
+          state.minx = 0.001;
+	  state.maxx = 0.1;
+	  $('#startx').val(state.minx);
+	  $('#endx').val(state.maxx);
+        }
 	if(state.yaxis_fix) {
 		state.miny = parseFloat($('#starty').val());
 		state.maxy = parseFloat($('#endy').val());
@@ -251,7 +264,11 @@ function gen_ticks(start, end, logarithmic) {
  */
 function gen_real_ticks(start, end, logarithmic) {
 	var realTicks = [];
-	var tick = Math.abs(end - start) / (config.nb_iterations + 10);
+	var tick_boost = 10;
+        if (needs_cunningham_kludge()) {
+           tick_boost = 40;
+        }
+	var tick = Math.abs(end - start) / (config.nb_iterations + tick_boost);
 	if(end < start){
 		var buffer;
 		buffer = end;
