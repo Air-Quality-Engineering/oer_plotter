@@ -57,7 +57,38 @@
 		#formula-display {
 			text-align: center;
 		}
+		button {
+			background-color: #BDBDBD;
+    		border-radius: 8px;
+   			color: black;
+    		padding: 15px 32px;
+    		text-align: center;
+    		text-decoration: none;
+    		display: inline-block;
+    		font-size: 16px;
+    		margin: 4px 2px;
+    		cursor: pointer;
+    		transition-duration: 0.4s;
+		}
+		button:hover {
+			background-color: #1E88E5;
+    		color: white;
+		}
 
+		button.active {
+			background-color: #1E88E5;
+			color: white;
+		}
+		button.inactive {
+			background-color: #BDBDBD;
+		}
+		img {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 90%;
+			height: auto;
+    	}
 	</style>
 	<script type="text/x-mathjax-config">
 		MathJax.Hub.Config({ tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}, "HTML-CSS": { scale: 150, linebreaks: { automatic: true } }, SVG: { linebreaks: { automatic:true } }, displayAlign: "left" });
@@ -66,19 +97,32 @@
 </head>
 
 <body>
+	<button id="default" class=" device_button inactive">Settling Velocity</button>
+	<button id="chamber" class="device_button inactive">Settling Chamber</button>
+	<button id="esp" class="device_button inactive">Electrostatic Precipiator</button>
+	<button id="venturi" class="device_button inactive">Venturi Scrubber</button>
+	<button id="cyclone" class="device_button inactive">Cyclone</button>
+	<button id="adsorption" class="device_button inactive">Adsorption</button>
 
 	<div id="container">
 		<div id="graph">
 		</div>
 		<div id="data">
+		<h4>Instructions</h4>
+		<P>1) Select a formula from the dropdown menu below the graph</P>
+		<P>2) Adjust the input variables as needed; the formula value is computed below (in the Result section) </P>
+		<P>3) Enter "x" in one of the variables input box to plot the equation value as a function of that variable. <strong>You might need to adjust the x and y axes ranges in the Options tab</strong></P>
 			<div id="options">
 				<h4>Options:</h4>
 				<div id="tabs">
 					<ul>
+						<li><a href="#diagram">Diagram</a></li>
 						<li><a href="#xaxis">X-Axis</a></li>
 						<li><a href="#yaxis">Y-Axis</a></li>
 					</ul>
-					<!-- Contents of First Tab -->
+					<!-- Contents of the Diagram Tab -->
+						<img id="diagram" src="default.jpg" alt="Force Balance on Settling Velocity">
+					<!-- Contents of X-Axis Tab -->
 					<div id="xaxis">
 						<div class="form-group">
 							<label>
@@ -130,12 +174,22 @@
 					</div>
 				</div>
 			</div>
-
+			
 			<select id="select_formula" style="width:100%; margin-top:10px;"></select>
 
 			<h4>Formula: <span id="formula-name"></span></h4>
-			<div id="formula-display"></div><span id="formula-unit"></span>
+<!--			<P>Select a forumla from the above dropdown menu. Enter "x" in one of the variables input box to showplot the equation value as a funciton of that variable. You might need to adjust the x and y axes ranges  in the Options section</P> -->
+			<div id="formula-display"></div>
+			<div><h4>Result: <span id="output"></span><span id="formula-unit"></span></div>
 			<div id="values">
+			</div>
+			<div class="form-group">
+			<!--	<label>
+					<h4>Number of calculated points: </h4> 
+				</label>		-->
+				<h4>Enter the number of points to be calculated for the graph:</h4>
+				<input id="tick_boost"/>
+					<p>User Warning: Increasing the number of points will give a smooth looking curve when plotting variables with a non-linear relationship to the result. However, if the number of points entered is too large, it will crash the plotter.</p>
 			</div>
 		</div>
 	</div>
@@ -167,10 +221,22 @@
 
 	<script>
 		$(document).ready(function() {
-			init();
-		});
-
+			init("default");
+			$('.device_button').each(function() {
+   				var device_name = $(this).context.id;
+   				var selector = "#" + device_name;
+   				var source = device_name + ".jpg";
+   				var alternative = device_name + " diagram";
+   				$(selector).on("click", function() {
+   					init(device_name);
+   					$("#diagram").attr("src", source);
+   					$("#diagram").attr("alt", alternative);
+				});
+   			});
+			update_active_button();
+		}); 
 	</script>
 </body>
-
+	<P>This JavaScript was developed thanks to funding from the <strong>University of Alberta's Open Educational Resources Award</strong>, and the <strong>American Society of Mechanical Engineers' Environmental Engineering Education Support Program</strong></P>
+//<h4><font size="+1">			</font></h4>
 </html>

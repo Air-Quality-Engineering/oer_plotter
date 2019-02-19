@@ -1,5 +1,5 @@
 //contains the plot object for future method calls
-var plot;
+var plotter;
 //keep track of the current state of the app
 var state = {
 	minx: 0,
@@ -10,15 +10,19 @@ var state = {
 	yaxis_type: 'normal',
 	yaxis_fix: false,
 	formula: undefined,
+	formula_id: undefined,
 	dataset: []
 };
 
-function init() {
-	
+function needs_cunningham_kludge() {
+	var vars = get_vars();
+	return ((state.formula_id == 'kc') && (vars["dp"].includes('x')));
+}
+
+function init(formulas_group) {
 	//load the specific formulas group and set that as the global variable formulas
-	var formulas_group = _GET('unit', 'default');
-	formulas = formulas[formulas_group];
-	
+	//var formulas_group = _GET('unit', 'default');
+	formulas = all_formulas[formulas_group];
 	populate_options();
 
 	//initialize the tabs
@@ -26,6 +30,7 @@ function init() {
 
 	//the select element
 	var select = $('#select_formula');
+	select.html('');
 
 	select.append('<option>--------------</option>');
 	//fill up the drop down with pre-defined formulas.
@@ -40,6 +45,7 @@ function init() {
 	select.on('change', function () {
 		var formula_id = $(this).val();
 		state.formula = formulas[formula_id];
+		state.formula_id = formula_id;
 		setup_formula_interface();
 		update();
 	});
@@ -51,6 +57,8 @@ function init() {
 			return;
 		update();
 	});
+
+
 
 	$('#xaxis-log, #yaxis-log').on('change', function () {
 		state.xaxis_type = ($('#xaxis-log').is(':checked')) ? 'log' : 'normal';
@@ -69,9 +77,8 @@ function init() {
 		update();
 	});
 
-	plot = $.plot($('#graph'), [[]]);
+	plotter = $.plot($('#graph'), [[]]);
 }
-
 
 /**
  * Populates the option fields in the interface from the config defaults.
@@ -94,8 +101,9 @@ function populate_options() {
 		$('#starty').val(config.defaults.log_ystart);
 		$('#endy').val(config.defaults.log_yend);
 	}
-}
 
+	$("#tick_boost").val(config.defaults.nb_ticks);
+}
 /**
  * Setups the interface for the formula and its values.
  * @author Adel Wehbi
@@ -139,7 +147,8 @@ function setup_formula_interface() {
 					$(this).siblings('input').val($(this).slider('value')).trigger('change');
 				}
 			});
-		} else if(variable.slider === false) {
+		}
+		 else if(variable.slider === false) {
 			group.find('.slider').remove();
 		}
 		//make visible by removing the style dispaly: none
@@ -163,8 +172,6 @@ function get_vars() {
 	});
 	return vars;
 }
-
-
 /**
  * Collects the options values from the interface, and adds them to the global state object.
  * @author Adel Wehbi
@@ -172,9 +179,23 @@ function get_vars() {
 function get_options() {
 	state.minx = parseFloat($('#startx').val());
 	state.maxx = parseFloat($('#endx').val());
+	tick_boost = parseFloat($("#tick_boost").val());
+	if (needs_cunningham_kludge()) {
+        state.minx = 0.001;
+	  	state.maxx = 0.1;
+	  $('#startx').val(state.minx);
+	  $('#endx').val(state.maxx);
+    }
 	if(state.yaxis_fix) {
 		state.miny = parseFloat($('#starty').val());
 		state.maxy = parseFloat($('#endy').val());
+	}
+	if(isNaN(tick_boost)) {
+		alert("Please enter a valid number");
+		return
+	}
+	else {
+		return tick_boost;
 	}
 }
 
@@ -238,6 +259,7 @@ function gen_ticks(start, end, logarithmic) {
 			v += tick;
 		}
 	}
+	console.log(ticks)
 	return ticks;
 }
 
@@ -251,7 +273,11 @@ function gen_ticks(start, end, logarithmic) {
  */
 function gen_real_ticks(start, end, logarithmic) {
 	var realTicks = [];
-	var tick = Math.abs(end - start) / (config.nb_iterations + 10);
+	var ticks = tick_boost;
+	if (needs_cunningham_kludge()) {
+           ticks = 100 + ticks;
+        }
+	var tick = Math.abs(end - start) / (ticks);
 	if(end < start){
 		var buffer;
 		buffer = end;
@@ -268,7 +294,7 @@ function gen_real_ticks(start, end, logarithmic) {
 function configure_xaxis() {
 	var logarithmic = (state.xaxis_type == 'log');
 	var ticks = gen_ticks(state.minx, state.maxx, logarithmic);
-	var xaxis = plot.getAxes().xaxis;
+	var xaxis = plotter.getAxes().xaxis;
 	xaxis.options.ticks = ticks;
 	xaxis.options.transform = function (value) {
 		if(logarithmic) {
@@ -282,7 +308,7 @@ function configure_xaxis() {
 				notation: 'exponential'
 			});
 		else
-			return value.toPrecision(2).replace(/\.\w*0+$/, '');
+			return value.toPrecision(1).replace(/\.\w*0+$/, '');
 	}
 }
 
@@ -318,7 +344,7 @@ function configure_yaxis() {
 	}
 	if(logarithmic || state.yaxis_fix)
 		ticks = gen_ticks(miny, maxy, logarithmic);
-	var yaxis = plot.getAxes().yaxis;
+	var yaxis = plotter.getAxes().yaxis;
 	if(logarithmic || state.yaxis_fix)
 		yaxis.options.ticks = ticks;
 	else
@@ -336,7 +362,7 @@ function configure_yaxis() {
 				notation: 'exponential'
 			});
 		else
-			return value.toPrecision(4);
+			return value.toPrecision(3);
 	}
 }
 
@@ -355,12 +381,40 @@ function update() {
 			(state.xaxis_type == 'logarithmic')
 		)
 	);
+	gen_output_value();
+	setup_output_interface();
 	configure_xaxis();
 	configure_yaxis();
-	plot.setData([{
+	plotter.setData([{
 		label: state.formula.name,
 		data: state.dataset
 	}]);
-	plot.setupGrid();
-	plot.draw();
+	plotter.setupGrid();
+	plotter.draw();
+
 }
+// In branch 
+function gen_output_value () {
+	variables = state.dataset
+	output_value = variables[0][1];
+	for (var i = 0; i < variables.length; i++) {
+		if(variables[i][1] !== variables[0][1]) { 
+			output_value = " "
+			return output_value; 
+		}
+	}
+	return output_value;
+};
+
+function setup_output_interface() {
+	output = output_value
+	if (output != " ") {
+		if ( output_value < 0.01 || output_value >= 1000) 
+			output = output_value.toExponential(4);
+		else 
+			output = output_value.toPrecision(4);
+	} 
+	$("#output").html(output);
+	return output;
+};
+

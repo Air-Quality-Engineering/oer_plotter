@@ -2,7 +2,7 @@
 // changed to reflect realistic values when analysing air quality control devices.
 // Units were added for calculated results to aid user to interpret answer  
 
-var formulas = {
+var all_formulas = {
 	'default':{	'rg': {
 		name: "Gas Density",
 		vars: {
@@ -125,7 +125,7 @@ var formulas = {
 				name: "Particle Size",
 					"default": 1,
 				unit: "&micro m",
-					"slider-min": 0.001,
+					"slider-min": 0.01,
 					"slider-max": 100,
 				tex: "d_p"
 				},
@@ -184,7 +184,7 @@ var formulas = {
 				"n": {
 					name: "Number of Channels",
 					"default": 1,
-					unit: "",
+					unit: " ",
 					tex: "n",
 					"slider-min": 1,
 					"slider-max": 15,
@@ -247,13 +247,13 @@ var formulas = {
 			],
 			vars: {},
 			tex: "\\eta(d_p) = 1- exp(\\frac{-V_{tp} A_c}{Q_g})",
-			unit: "\\frac{m}{s}",
+			unit: "\\%",
 			compute: function (scope) {
 				if(scope.re < 2200) {
-					var result = math.eval("(vtp * ac)/qg", scope);
+					var result = math.eval("((vtp * ac)/qg)*100", scope);
 					return(result > 1) ? 1 : result;
 				} else if(scope.re > 4000)
-					return math.eval('1 - exp((-vtp * ac)/qg)', scope)
+					return math.eval('(1 - exp((-vtp * ac)/qg))*100', scope)
 				else
 					return false;
 			}
@@ -284,7 +284,7 @@ var formulas = {
 				"n": {
 					name: "Number of Channels",
 					"default": 1,
-					unit: "",
+					unit: " ",
 					tex: "n",
 					"slider-min": 1,
 					"slider-max": 15,
@@ -443,7 +443,7 @@ var formulas = {
 			"n": {
 				name: "Number of Channels",
 				"default": 1,
-				unit: "",
+				unit: " ",
 				tex: "n",
 				"slider-min": 1,
 				"slider-max": 15,
@@ -472,7 +472,7 @@ var formulas = {
 			"dpp": {
 				name: "Dielectric Constant of Particle",
 				"default": 3,
-				unit: '',
+				unit: ' ',
 				tex: "D'_p",
 				"slider-min": 2,
 				"slider-max": 8
@@ -508,17 +508,16 @@ var formulas = {
 			're_ESP',
 		],
 		vars: {
-
 		},
-		unit: "%",
+		unit: "\\%",
 		tex: "\\eta(d_p)_{ESP} = 1- exp(-\\frac{\\omega_p \\: A_{c\\,ESP}}{Q_g}) \\quad  if \\: Re_{ESP}>4000 \\\\ or \\ \\eta(d_p)_{ESP} = \\frac{\\omega_p \\: A_{c\\,ESP}}{Q_g}  \\\ if \\: Re_{ESP}<2200",
 		compute: function (scope) {
 			if(scope.re_ESP < 2200) {
-					var result = math.eval("(omega * ac_ESP)/qg", scope);
+					var result = math.eval("((omega * ac_ESP)/qg)*100", scope);
 					return(result > 1) ? 1 : result;
 			}
 			else if(scope.re_ESP > 4000)
-				return math.eval('1 - exp((-omega * ac_ESP)/qg)', scope)
+				return math.eval('(1 - exp((-omega * ac_ESP)/qg))*100', scope)
 			else
 				return false;
 		}
@@ -535,7 +534,7 @@ var formulas = {
 				name: "Gas Flow Rate",
 				"default": 1,
 				unit: "\\frac{m^3}{s}",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 100,
 				tex: "Q_g"
 			},
@@ -551,11 +550,10 @@ var formulas = {
 			"n": {
 				name: "Number of Channels",
 				"default": 1,
-				unit: "",
+				unit: " ",
 				tex: "n",
 				"slider-min": 1,
 				"slider-max": 15,
-				"slider-step": 1
 			},
 			"d": {
 				name: "Distance between plates",
@@ -568,7 +566,7 @@ var formulas = {
 			},
 		},
 		tex: "Re_{ESP} = \\frac{2Q_g \\rho_g}{n (D + H)\\mu_g}",
-		equation: "(2 * qg * rg)/(n*(d + h)*mug)",
+		equation: "((2 * qg * rg)/(n*(d + h)*mug))",
 		unit: " "
 	},
 
@@ -698,7 +696,7 @@ var formulas = {
 		],
 		vars:{
 			"rl": {
-				name: "Density of liquid",
+				na5me: "Density of liquid",
 				"default": 1000,
 				unit: '\\frac{kg}{m^3}',
 				tex: '\\rho_L',
@@ -742,23 +740,22 @@ var formulas = {
 				name: "Gas Flow Rate",
 				"default": 1,
 				unit: "\\frac{m^3}{s}",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 100,
 				tex: "Q_g"
 			},
 			"f": {
 				name: "experimental coefficient",
 				"default": 0.25,
-				unit: "",
+				unit: " ",
 				tex: "f",
 				"slider-min": 0.1,
 				"slider-max": 0.4,
-				"slider-step": 0.05
 			},
 		},
 			tex: "\\eta (d_p)_{venutri} = 1-exp\\left(-\\frac{6.3 10^-4 \\rho_l \\rho_p K_c d_p^2 \\overline{u_g}^2 (\\frac{Q_L}{Q_g}) f^2}{ \\mu_g^2}\\right)",
-		equation: "1-exp(-((6.3*0.0001)*rl*rp*kc*(dp*10^-6)^2*ug^2*(ql/qg)*f^2)/(mug^2))",
-		unit: "%"
+		equation: "(1-exp(-((6.3*0.0001)*rl*rp*kc*(dp*10^-6)^2*ug^2*(ql/qg)*f^2)/(mug^2)))*100",
+		unit: "\\%"
 	},
 	
 	'deltap': {
@@ -768,7 +765,7 @@ var formulas = {
 			"ug": {
 				"default": 50,
 				name: "Velocity in venturi throat",
-				unit: "\\frac{m}{s}",
+				unit: "\\frac{cm}{s}",
 				tex: "\\overline{u_g}",
 				"slider-min": 50,
 				"slider-max": 150,
@@ -786,14 +783,14 @@ var formulas = {
 				name: "Gas Flow Rate",
 				"default": 1,
 				unit: "\\frac{m^3}{s}",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 100,
 				tex: "Q_g"
 			},
 			"beta": {
 				name: "experimental coefficient",
 				"default": 0.85,
-				unit: "",
+				unit: " ",
 				tex: "\\beta",
 				slider: false
 			},	
@@ -802,7 +799,7 @@ var formulas = {
 //			'g': 9.81,
 			'rl':1000,
 		},
-		unit: "m H_{2}0",
+		unit: "cm H_{2}0",
 //	equation: "beta*rl*ug^2*(ql/qg)",
 		tex: "\\Delta_p (Pas) = \\beta \\rho_L \\overline{u_g}^2 (\\frac{Q_L}{Q_g})",
 		compute: function (scope) {
@@ -951,22 +948,22 @@ var formulas = {
 				name: "Gas Flow Rate",
 				"default": 1,
 				unit: "\\frac{m^3}{s}",
-				"slider-min": 0,
+				"slider-min": 0.5,
 				"slider-max": 15,
 				tex: "Q_g"
 			},
 			"w": {
 				name: "Width of inlet",
 				"default": 0.25,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{W}{D_O}",
-				"slider-min": 0.5,
+				"slider-min": 0.25,
 				"slider-max": 1,
 			},
 			'h': {
 				name: "Height of inlet",
 				"default": 0.5,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{H}{D_o}",
 				"slider-min": 0.5,
 				"slider-max": 1,
@@ -974,7 +971,7 @@ var formulas = {
 			'l1': {
 				name: "L1",
 				"default": 2,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{L1}{D_o}",
 				"slider-min": 2,
 				"slider-max": 2,
@@ -990,17 +987,17 @@ var formulas = {
 				name: "Body diameter",
 				"default": 1,
 				unit: "m",
-				"slider-min": 0.1,
-				"slider-max": 3,
+				"slider-min": 0.5,
+				"slider-max": 3.5,
 				tex: "D_o"
 			},
 		},
 		constants: {
 			pi: math.pi,
 		},
-		unit: "%",
+		unit: "\\%",
 		tex: "\\eta(d_p)_{Cyclone, theoretical} = \\frac{d_p^2 \\rho_p Q_g \\Pi N_e}{9 \\mu_g W^2 H}",
-		equation: '(dp*10^-6)^2*rp*qg*pi*(1/h)*(l1+0.5*l2)/(9*mug*(w*do)^2*(h*do))'	
+		equation: '(dp*10^-6)^2*rp*qg*pi*(1/h)*(l1+0.5*l2)/(9*mug*(w*do)^2*(h*do))*100'	
 	},
 
 	'eta': {
@@ -1019,10 +1016,10 @@ var formulas = {
 				tex: "d_p"
 			},	
 		},
-		unit: "%",
+		unit: "\\%",
 		tex: "\\eta(d_p)_{Cyclone, empirical} =f(d_p/d_{pc})",
 		compute: function (scope) {
-				return math.eval('1/(1+(dpc/dp)^2)', scope)		
+				return math.eval('(1/(1+(dpc/dp)^2))*100', scope)		
 		},
 	},
 	
@@ -1035,7 +1032,7 @@ var formulas = {
 			"w": {
 				name: "Width of inlet",
 				"default": 0.25,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{W}{D_O}",
 				"slider-min": 0.5,
 				"slider-max": 1,
@@ -1043,7 +1040,7 @@ var formulas = {
 			'h': {
 				name: "Height of inlet",
 				"default": 0.5,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{H}{D_o}",
 				"slider-min": 0.5,
 				"slider-max": 1,
@@ -1060,14 +1057,14 @@ var formulas = {
 				name: "Gas Flow Rate",
 				"default": 1,
 				unit: "\\frac{m^3}{s}",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 15,
 				tex: "Q_g"
 			},
 			'l1': {
 				name: "L1",
 				"default": 2,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{L2}{D_o}",
 				"slider-min": 2,
 				"slider-max": 2,
@@ -1075,7 +1072,7 @@ var formulas = {
 			'l2': {
 				name: "L2",
 				"default": 2,
-				unit: "m",
+				unit: " ",
 				tex: "\\frac{L2}{D_o}",
 				"slider-min": 2,
 				"slider-max": 2,
@@ -1085,7 +1082,7 @@ var formulas = {
 				"default": 1,
 				unit: "m",
 				"slider-min": 0.1,
-				"slider-max": 3,
+				"slider-max": 3.5,
 				tex: "D_o"
 			},
 		},
@@ -1110,7 +1107,7 @@ var formulas = {
 				name: "Gas Flow Rate",
 				"default": 1,
 				unit: "\\frac{m^3}{s}",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 15,
 				tex: "Q_g"
 			},
@@ -1143,7 +1140,7 @@ var formulas = {
 				"default": 0.5,
 				unit: " ",
 				"slider-min": 0.1,
-				"slider-max": 2,
+				"slider-max": 3.5,
 				tex: "\\frac{D_e}{D_o}"
 			},
 			'k': {
@@ -1233,16 +1230,16 @@ var formulas = {
 			'c': {
 				name: "Concentration",
 				"default": 10,
-				unit: "\\frac{mg}{m3}",
-				"slider-min": 0,
+				unit: "\\frac{mg}{m^3}",
+				"slider-min": 1,
 				"slider-max": 1000,
 				tex: "C"
 			},	
 			'k': {
 				name: "Freundlich constant",
 				"default": 10,
-				unit: "",
-				"slider-min": 0,
+				unit: " ",
+				"slider-min": 1,
 				"slider-max": 1000,
 				tex: "K"
 			},	
@@ -1250,8 +1247,8 @@ var formulas = {
 			'n': {
 				name: "Freundlich power",
 				"default": 1,
-				unit: "",
-				"slider-min": 0.001,
+				unit: " ",
+				"slider-min": 1,
 				"slider-max": 10,
 				tex: "n"
 			},	
@@ -1271,7 +1268,7 @@ var formulas = {
 				name: "beta",
 				"default": 10,
 				unit: "\\frac{mg}{m^3}",
-				"slider-min": 0.0001,
+				"slider-min": 1,
 				"slider-max": 100,
 				tex: "\\beta"
 			},	
@@ -1279,7 +1276,7 @@ var formulas = {
 				name: "Freundlich constant",
 				"default": 0.5,
 				unit: "\\frac{g}{g}",
-				"slider-min": 0,
+				"slider-min": 0.05,
 				"slider-max": 1,
 				tex: "q_{sat}"
 			},	
@@ -1287,7 +1284,7 @@ var formulas = {
 				name: "Freundlich power",
 				"default": 1,
 				unit: " ",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 10,
 				tex: "\\alpha"
 			},	
@@ -1295,7 +1292,7 @@ var formulas = {
 		
 		tex: "\\frac{m_a}{V_{g,T}}=\\alpha (q_{sat})^{\\beta}",
 			equation: "alpha*q^(beta)",
-		unit: " "
+		unit: "\\frac{mg}{m^3}"
 
 	},
 
@@ -1309,15 +1306,15 @@ var formulas = {
 				name: "mass feed rate",
 				"default": 1,
 				unit: "\\frac{kg}{s}",
-				"slider-min": 0,
+				"slider-min": 0.5,
 				"slider-max": 100,
-			tex: "\\dot{m}_{g,T}"
+				tex: "\\dot{m}_{g,T}"
 			},	
 			'rads': {
 				name: "apparent density",
 				"default": 0.5,
-				unit: "",
-				"slider-min": 0,
+				unit: " ",
+				"slider-min": 0.0,
 				"slider-max": 1,
 				tex: "\\rho_{ad}"
 			},	
@@ -1325,22 +1322,22 @@ var formulas = {
 				name: "Cross sectional area",
 				"default": 1,
 				unit: "m^2",
-				"slider-min": 0,
+				"slider-min": 0.5,
 				"slider-max": 100,
 				tex: "A_{CSA}"
 			},	
 			'alpha': {
 				name: "Freundlich power",
 				"default": 1,
-				unit: "",
-				"slider-min": 0,
+				unit: " ",
+				"slider-min": 1,
 				"slider-max": 10,
 				tex: "\\alpha"
 			},	
 			'beta': {
 				name: "beta",
 				"default": 10,
-				unit: "\\frac{mg}{m3}",
+				unit: " ",
 				"slider-min": 1.1,
 				"slider-max": 100,
 			tex: "\\beta"
@@ -1348,8 +1345,8 @@ var formulas = {
 			'c': {
 				name: "Concentration",
 				"default": 10,
-				unit: "\\frac{mg}{m3}",
-				"slider-min": 0,
+				unit: "\\frac{kg}{m^3}",
+				"slider-min": 1,
 				"slider-max": 1000,
 				tex: "\\frac{m_a}{V_{g,T}}"
 			},	
@@ -1370,31 +1367,31 @@ var formulas = {
 				name: "mass feed rate",
 				"default": 1,
 				unit: "\\frac{kg}{s}",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 100,
 			tex: "\\dot{m}_{g,T}"
 			},	
 			'k': {
 				name: "Mass transfer coefficient",
 				"default": 0.5,
-				unit: "",
-				"slider-min": 0,
-				"slider-max": 10,
+				unit: "\\frac{1}{s}",
+				"slider-min": 4,
+				"slider-max": 100,
 				tex: "K"
 			},	
 			'acsa': {
 				name: "Cross sectional area",
 				"default": 1,
 				unit: "m^2",
-				"slider-min": 0,
+				"slider-min": 1,
 				"slider-max": 100,
 				tex: "A_{CSA}"
 			},	
 			'beta': {
 				name: "beta",
 				"default": 10,
-				unit: "\\frac{mg}{m^3}",
-				"slider-min": 1.1,
+				unit: " ",
+				"slider-min": 1,
 				"slider-max": 100,
 				tex: "\\beta"
 			},	
@@ -1415,9 +1412,9 @@ var formulas = {
 				name: "Bed length",
 				"default": 1,
 				unit: "m",
-				"slider-min": 0.0001,
+				"slider-min": 0.5,
 				"slider-max": 100,
-			tex: "L"
+				tex: "L"
 			},		
 		},
 		unit: "s",

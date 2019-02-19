@@ -78,6 +78,58 @@
 		#formula-display {
 			text-align: center;
 		}
+		button {
+			background-color: #BDBDBD;
+    		border-radius: 8px;
+   			color: black;
+    		padding: 10px 20px;
+    		text-align: center;
+    		text-decoration: none;
+    		display: inline-block;
+    		font-size: 16px;
+    		margin: 2px 4px;
+    		cursor: pointer;
+    		transition-duration: 0.4s;
+    		float: center;
+		}
+		button:hover {
+			background-color: #1E88E5;
+    		color: white;
+		}
+
+		button.active {
+			background-color: #1E88E5;
+			color: white;
+		}
+		button.inactive {
+			background-color: #BDBDBD;
+		}
+		.entry {
+			: 10px;
+			font-weight: bold;
+			font-size: 16px;
+		}
+		label {
+			float:center;
+			margin-top: 4px;
+		}
+		p.box_container {
+			clear: both;
+			display: inline-block;
+		}
+		p.box_container input {
+			clear: left;
+			float: left;
+			margin-left: 80px;
+		}
+		p.box_containter label {
+			clear: left;
+			display: block;
+			float: left;
+			margin-left: 10px;
+			width: 200px;
+			font-family: Georgia, serif;
+		}
 	</style>
 	<script type="text/x-mathjax-config">
 		MathJax.Hub.Config({ tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}, "HTML-CSS": { scale: 150, linebreaks: { automatic: true } }, SVG: { linebreaks: { automatic:true } }, displayAlign: "left" });
@@ -85,6 +137,11 @@
 </head>
 
 <body>
+	<button id="default" class="device_button inactive">Distribution</button>
+	<button id="chamber" class="device_button inactive">Settling Chamber</button>
+	<button id="esp" class="device_button inactive">Electrostatic Precipiator</button>
+	<button id="venturi" class="device_button inactive">Venturi Scrubber</button>
+	<button id="cyclone" class="device_button inactive">Cyclone</button>
 
 	<div id="container">
 		<div id="plots">
@@ -106,23 +163,28 @@
 				<tbody>
 					<tr>
 						<td class="lower_bound">
-							<input autocomplete='off'/>
+							<input />
 						</td>
 						<td class="upper_bound">
-							<input autocomplete='off'/>
+							<input />
 						</td>
 						<td class="mid_diameter">
 						</td>
 						<td class="inlet_psd">
-							<input autocomplete='off'/>
+							<input />
 						</td>
 						<td class="efficiency"></td>
 						<td class="outlet_psd"></td>
 					</tr>
 				</tbody>
 			</table>
+	<h4>Instructions</h4>
+		<P>1) Enter the particle size distribution (PSD) by weight or percent by weight</P>
+		<P>2) Enter the device's efficiency or select a device from the above tabs and enter the device design and operation parameters</P>
+		<P>3) Use the slider to change a variable and see its effect on the overall removal efficiency, the graded fractional removal efficiency, and the outlet PSD</P>
+
 			<h2>$\eta_{overall}$: <span id="sum_mi_eta" s></span> %</h2>
-			<h4>Variables:</h4>
+<!--			<h4>Variables:</h4>		-->
 			<div id="variables">
 			</div>
 		</div>
@@ -130,7 +192,7 @@
 
 	<div id="value-template" class="form-group" style="display: none;">
 		<label></label>
-		<input />
+		<input /><span class='variable-units'></span>
 		<div class="slider">
 		</div>
 	</div>
@@ -140,9 +202,9 @@
 	<script type="text/javascript" src="assets/js/jquery.min.js"></script>
 	<script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
 	<script type='text/javascript' src='assets/js/math.min.js'></script>
-	<script type="text/javascript" async
+	<script type="text/javascript" 
           src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
-	<script type="text/javascript" async
+	<script type="text/javascript" 
           src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
 	<!-- Project files -->
@@ -154,10 +216,17 @@
 	<script>
 		
 		$(document).ready(function() {
-			init();
+			init("default");
+			$('.device_button').each(function() {
+   				var device_name = $(this).context.id;
+   				var selector = "#" + device_name;
+   				$(selector).on("click", function() {
+   					init(device_name);
+   				});
+   			});
+   			update_active_button();
 		});
-
 	</script>
 </body>
-
+		<P>This JavaScript was developed thanks to funding from the <strong>University of Alberta's Open Educational Resources Award</strong>, and the <strong>American Society of Mechanical Engineers' Environmental Engineering Education Support Program</strong></P>
 </html>
