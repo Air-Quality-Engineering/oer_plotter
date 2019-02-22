@@ -13,7 +13,8 @@ var config = {
 			min: 0,
 			max: 100,
 			step: 1
-		}
+		},
+		nb_ticks: 30
 	},
-	nb_iterations: 10
+	nb_iterations: 10,
 };

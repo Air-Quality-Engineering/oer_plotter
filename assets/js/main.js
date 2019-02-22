@@ -162,3 +162,17 @@ function compute(formula, vars) {
 function toNearestPower10(value) {
 	return Math.pow(10, Math.round(Math.log10(value)));
 }
+
+// This function changes the color of an active button in order to identify which device you are evaluating/using
+function update_active_button() {
+	var devices = document.querySelectorAll("button");
+	for (num in devices) {
+		devices[num].onclick = function (){
+			var activeButton = document.querySelectorAll(".active")[0];
+			if (this.className = "inactive") {
+				if(activeButton) activeButton.className = "inactive";
+				this.className = "active";
+			};
+		};
+	};
+};
