@@ -13,17 +13,30 @@ var state = {
 	formula_id: undefined,
 	dataset: []
 };
+var ck_on_x = false; //this is to keep track of state of the cunninghan kludge flag
 
 function needs_cunningham_kludge() {
-	var vars = get_vars();
-	return ((state.formula_id == 'kc') && (vars["dp"].includes('x')));
+    // if start and end x values have already been set once and dp hasn't changed don't overwrite them again
+    var vars = get_vars();
+    // only change the auto startx and endx values if ck_on_x not already marked true before
+    if (ck_on_x==false) {
+        ck_on_x = ((state.formula_id == 'kc') && (vars["dp"].includes('x')));
+        return ck_on_x;
+    }
+    else {
+        ck_on_x = ((state.formula_id == 'kc') && (vars["dp"].includes('x')));
+        return false;
+    }
+    
 }
 
 function init(formulas_group) {
+	//console.log("FORM", formulas_group);
 	//load the specific formulas group and set that as the global variable formulas
 	//var formulas_group = _GET('unit', 'default');
 	formulas = all_formulas[formulas_group];
 	populate_options();
+	//console.log("FORM", formulas);
 
 	//initialize the tabs
 	$('#tabs').tabs();
@@ -50,15 +63,13 @@ function init(formulas_group) {
 		update();
 	});
 
-
 	$('#data').on('change', 'input', function () {
 		//if the interface has not been setup for any formula yet
 		if(state.formula === undefined)
 			return;
-		update();
+        // check only if was true before
+        update();		
 	});
-
-
 
 	$('#xaxis-log, #yaxis-log').on('change', function () {
 		state.xaxis_type = ($('#xaxis-log').is(':checked')) ? 'log' : 'normal';
@@ -89,6 +100,7 @@ function populate_options() {
 	if(state.xaxis_type == 'normal') {
 		$('#startx').val(config.defaults.start);
 		$('#endx').val(config.defaults.end);
+
 	} else if(state.xaxis_type == 'log') {
 		$('#startx').val(config.defaults.log_start);
 		$('#endx').val(config.defaults.log_end);
@@ -259,7 +271,7 @@ function gen_ticks(start, end, logarithmic) {
 			v += tick;
 		}
 	}
-	console.log(ticks)
+	//console.log(ticks)
 	return ticks;
 }
 
