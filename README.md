@@ -5,8 +5,8 @@ To run: Clone this repo and open plotter.html, distribution.html, or plume.html 
 
 Please see rendered version at:     
 https://air-quality-engineering.github.io/oer_plotter/plotter.html    
-https://falon3.github.io/oer_visualTools/distribution.html    
-https://falon3.github.io/oer_visualTools/plume.html        
+https://air-quality-engineering.github.io/oer_plotter/distribution.html    
+https://air-quality-engineering.github.io/oer_plotter/plume.html        
 
     
 For full history of plume module development please see: https://github.com/falon3/oer_visualTools    
