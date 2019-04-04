@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+  <head >    
+        <!-- Plugins and Libraries -->
+    <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery-ui.min.js"></script>
+    <script type='text/javascript' src='assets/js/math.min.js'></script>
+    <!--[if lte IE 8]><script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/excanvas.min.js"></script><![endif]-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="assets/js/jquery.flot.selection.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.symbol.min.js"></script>
+
+    <script type="text/javascript" src="assets/js/jquery.flot.axislabels.js"></script>
+    
+
+    <script type="text/javascript" 
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.10.0/firebase.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>    
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type='text/javascript' src="config/formulas.js"></script>
+    <script type='text/javascript' src="config/configPlume.js"></script>
+    <script type='text/javascript' src="assets/js/plume.js"></script>
+     <script type='text/javascript' src="assets/js/sideview.js"></script>
+     <script type='text/javascript' src="assets/js/topview.js"></script>
+     <script type='text/javascript' src="assets/js/ccenprofile.js"></script>
+
+
+     <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGXaF9n_XgHUHMaTn0wiP9yDqVB5S0SrA&callback=drawNewMap">  
+    </script>
+    
+    <link rel="stylesheet" href="assets/css/jquery-ui.min.css">
+  
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Plume Visualization</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+       #container{
+            height: 100%;
+      
+        }
+      div#chart_div, div#profile {
+        float:left;
+        height: 100%;
+        width: 60%;
+        box-sizing: border-box;
+        padding: 10px;
+        overflow-x: scroll;
+        overflow-y: scroll;
+        }
+        #map {
+        float:left;
+        height: 100%;
+        width: 60%;
+        top:0px;
+        left:0px;
+        box-sizing: border-box;
+        padding: 10px;
+      }
+      #data{
+        float:right;
+        width:40%;
+        height: 100%;
+        overflow: auto;
+        box-sizing: border-box;
+        padding: 15px;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+
+      }
+      .sliderout{
+        font-weight: bold; 
+        font-size:large;
+        width:70px;
+      }
+      .userdata{
+            margin-bottom: 10px;
+      }
+      label{
+        font-weight: bold;
+      }
+        .concentration {
+            position: absolute;
+            left: 25%;
+            top:50px;
+          z-index: 10;
+          background-color: white;
+        }
+
+     /* NAVBAR  */   
+    ul.navbar {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    li {
+      float: left;
+      border-right:1px solid #bbb;
+    }
+
+    li:last-child {
+      border-right: none;
+    }
+
+    li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    li a:hover:not(.active) {
+      background-color: #111;
+    }
+
+    .active {
+      background-color: #4CAF50;
+    }
+     /* END NAVBAR  */ 
+
+     /* MAPVIEW LEGEND */
+     .my-legend .legend-title {
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: bold;
+        font-size: 90%;
+        }
+      .my-legend .legend-scale ul {
+        margin: 0;
+        padding: 0;
+        float: left;
+        list-style: none;
+        }
+      .my-legend .legend-scale ul li {
+        display: block;
+        float: left;
+        width: 50px;
+        margin-bottom: 6px;
+        text-align: center;
+        font-size: 80%;
+        list-style: none;
+        }
+      .my-legend ul.legend-labels li span {
+        display: block;
+        float: left;
+        height: 15px;
+        width: 50px;
+        }
+      .my-legend .legend-source {
+        font-size: 70%;
+        color: #999;
+        clear: both;
+        }
+      .my-legend a {
+        color: #777;
+        
+        }
+        .my-legend {
+          position: absolute;
+          top: 105px;
+          left: 10px;
+          z-index: 10;
+          background-color: white;
+        }
+        /*override their color scheme for bar on legend*/
+        .ui-widget-header {
+          background-color: #908b8b;
+      }
+      /* END MAPVIEW LEGEND */
+
+      /*profile flot tooltip*/
+      #flot-tooltip {
+        font-size: 12px;
+        font-family: Verdana, Arial, sans-serif;
+        position: absolute;
+        display: none;
+        border: 2px solid;
+        padding: 2px;
+        background-color: #FFF;
+        opacity: 0.8;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        -khtml-border-radius: 5px;
+        border-radius: 5px;
+    }
+
+
+    </style>
+
+  </head>
+  
+  <body>
+    <div id="navbar">
+    <ul class="navbar">
+        <li style="float:right"><a href="model.html">About</a></li>
+        <li style="float:right"><a class="nav" href="#profile" onclick="show_ccenprofile()">Concentration Profile</a></li>
+        <li style="float:right"><a class="nav " href="#side" onclick="show_Sideview()">Side View</a></li>
+      <li style="float:right"><a class="nav active" href="#top" onclick="show_Topview()">Top View</a></li>
+      
+      
+      
+    </ul>
+    </div>
+    <div id="container">
+        <div class='topview my-legend'> <!-- for topview  -->   
+            <div class='legend-title'> Concentration of Contaminate (μg/m^3)</div>
+            <div class='legend-scale'>
+            <ul class='legend-labels'>
+              <li><span style='background:#9FFF33;'></span><span id="level0">5+</span> μg/m<sup>3</sup></li>
+              <li><span style='background:#fbe37f;'></span><span id="level1">10+</span> μg/m<sup>3</sup></li>
+              <li><span style='background:#ffcd00;'></span><span id="level2">20+</span> μg/m<sup>3</sup></li>
+              <li><span style='background:#fb740c;'></span><span id="level3">30+</span> μg/m<sup>3</sup></li>
+              <li><span style='background:#f32a2a;'></span><span id="level4">50+</span> μg/m<sup>3</sup></li>
+              <li><span style='background:#5d0404;'></span><span id="level5">100+</span> μg/m<sup>3</sup></li>
+            </ul>
+          </div>
+          <p>
+              <label for="topamount">Concentration range:</label>
+              <input type="text" id="topamount" readonly style="font-size:medium; border:0; color: #2c2d2c; font-weight:bold;">
+            </p>
+             
+            <div style = "margin-bottom:5px;" id="topslider-range"></div>
+        </div>
+
+        <div class='sideview concentration'>   <!-- for sideview  -->   
+          <label for="amount">Concentration range:</label>
+          <input type="text" id="amount" readonly style="width: 100px; font-size:medium; border:0; color: #2c2d2c; font-weight:bold;">
+           <br>
+            <div style = "margin-top:5px;" id="slider-range"></div>
+        </div>
+
+        <div class="sideview" id="chart_div"></div> <!-- //sidevioew -->
+         <div class="topview" id="map"></div>  <!-- topview -->
+          <div style="margin-top: 20px;" class="ccenprofile" id="profile">
+              <div id="detailContainer" style="width: 100%;height:60%;margin-top:10px; text-align: left;"></div>        
+                <div id="masterContainer" style="width: 100%;height:40%;margin-top:10px;"></div>
+          </div>   <!-- c vs x profile -->
+
+        <div id="data">
+       <label for="QRange"><input name="Q" class="sliderout" id="QOut" oninput="QRange.value=QOut.value"></input></label><br>
+       <input class="userdata" name="Q" type="range"  id="QRange" oninput="QOut.value = QRange.value"><br>
+
+       <label for="wsRange"><input name="ws" class="sliderout" id="wsOut" style="width:40px;" oninput="wsRange.value=wsOut.value"></input> </label><br>
+       <input class="userdata" name="ws" type="range"  id="wsRange" oninput="wsOut.value = wsRange.value"><br>   
+
+       <label for="Z1Range"><input name="Z1" class="sliderout" id="Z1Out" oninput="Z1Range.value=Z1Out.value"></input> </label><br>
+       <input class="userdata" name="Z1" type="range"  id="Z1Range" oninput="Z1Out.value = Z1Range.value"><br>
+       
+       <label for="PaRange"><input name="Pa" class="sliderout" id="PaOut" oninput="PaRange.value=PaOut.value"></input> </label><br> 
+       <input class="userdata" type="range" name="Pa" id="PaRange" oninput="PaOut.value = PaRange.value"><br>
+
+
+       <!-- FOR TOPVIEW ONLY -->
+       <span class="topview" id="wdSpan">
+       <label for="wdRange"><input name ="wd" class="sliderout" id = "wdOut" oninput="wdRange.value=wdOut.value"></input><span id="wdLetter"></span></label><br> 
+       <input class="userdata" type="range"   name="wd" id="wdRange"  oninput="wdOut.value = wdRange.value"><br>
+        </span>
+       <!-- END FOR TOPVIEW ONLY -->
+
+
+       <label for="hRange"><input class="sliderout" name="h" id="hOut" oninput="hRange.value=hOut.value"></input> </label><br>
+       <input class="userdata" type="range" name="h" id="hRange" oninput="hOut.value = hRange.value"><br>
+       
+       <label for="dsRange"><input name="ds" class="sliderout" id="dsOut" oninput="dsRange.value=dsOut.value"></input> </label><br>      
+       <input class="userdata" name="ds" type="range"  id="dsRange" oninput="dsOut.value = dsRange.value"><br>
+
+       <label for="VsRange"><input name="Vs" class="sliderout" id="VsOut" oninput="VsRange.value=VsOut.value"></input></label><br>
+       <input class="userdata" name="Vs" type="range"  id="VsRange" oninput="VsOut.value = VsRange.value"><br>
+      
+       <label for="TsRange"><input name="Ts" class="sliderout" id="TsOut" oninput="TsRange.value=TsOut.value"></input> </label><br>
+       <input class="userdata" name="Ts" type="range"  id="TsRange" oninput="TsOut.value = TsRange.value"><br>
+      
+       <label for="TaRange"><input name="Ta" class="sliderout" id="TaOut" oninput="TaRange.value=TaOut.value"></input> </label><br>
+       <input class="userdata" name="Ta" type="range"  id="TaRange" oninput="TaOut.value = TaRange.value"><br>
+
+       <label for="XmaxRange"><input name="Xmax" class="sliderout" id="XmaxOut" oninput="XmaxRange.value=XmaxOut.value"></input> </label><br>  
+       <input class="userdata" type="range" name="Xmax" id="XmaxRange" oninput="XmaxOut.value = XmaxRange.value"><br>
+
+       <!-- FOR TOPVIEW  ONNLY -->
+       <span class="topview"id="zSpan">
+       <label for="z"></label><br>
+       <select class="userdata" id="z">
+      </select>
+      <br>
+        </span>
+      <!-- END FOR TOPVIEW ONNLY -->
+
+      <!-- FOR  concentration profile ONNLY -->
+      <span class="ccenprofile">
+       <label for="ZinputRange"><input name="Zinput" class="sliderout" id="ZinputOut" oninput="ZinputRange.value=ZinputOut.value"></input> </label><br>  
+       <input class="userdata" type="range" name="Zinput" id="ZinputRange" oninput="ZinputOut.value = ZinputRange.value"><br>
+       </span>
+       <!-- END FOR  concentration profile ONNLY -->
+
+       <!-- FOR  concentration profile  AND sideview ONNLY -->
+       <span id="ySpan">
+       <label for="YinputRange"><input name="Yinput" class="sliderout" id="YinputOut" oninput="YinputRange.value=YinputOut.value"></input> </label><br>  
+       <input class="userdata" type="range" name="Yinput" id="YinputRange" oninput="YinputOut.value = YinputRange.value"><br>
+      <br>
+      </span>
+      <!-- END FOR  concentration profile  AND sideview ONNLY -->
+        
+        
+
+       <label for="sc">sc: Stability Class</label><br>
+       <select class="sc" id="sc">
+        </select>
+        <select class="sc" id="sloc">       
+        </select>
+        <br>
+        <br>
+
+        <!-- FOR TOPVIEW ONLY -->
+        <span class="topview" id="locSpan">
+        <label>Map Location of Stack</label>
+       <br>
+       <label for="lat" style="margin-right:5px; font-weight: normal;"></label>
+       <input type="number" class="userdata"  id="lat">
+       <br>
+       <label for ="lon" style="margin-right:5px; font-weight: normal;"></label>
+       <input type="number" class="userdata"  id="lon">
+        </span>
+        <!-- end FOR TOPVIEW ONLY -->
+
+        <br>
+        <span class="ccenprofile sideview">
+        <input style="background: cadetblue; font-size: larger;" type="button" value="Export Data" onclick="exportData()"/>
+        </span>
+
+      </div>
+
+    </div>
+  </body>
+</html>
