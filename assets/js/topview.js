@@ -44,7 +44,8 @@ function translate_coordinates(strokeColor, zone, Us, H) {
         else if (z=="ground") z_num=0;
         var olat = latitude;
         var olon = longitude;
-        var rotation_angle_degs = wd;
+        var rotation_angle_degs = parseInt(wd)+90;
+        console.log("rot", rotation_angle_degs);
         var ynew = [];
         var xoffset = 0;
         var yoffset = 0;
@@ -261,7 +262,7 @@ function translate_coordinates(strokeColor, zone, Us, H) {
 };
 
 function DEG_TO_RADIANS(x){
-    return (x/RADIANS);
+    return (x*RADIANS);
 }
 //helper functions for latlon conversion
 function METERS_DEGLON(x)
@@ -318,8 +319,8 @@ function xy_to_latlon(x, y, olon, olat, rotation_angle_degs, xoffset, yoffset){
 function labelWindDirection(){
     var wstring = "";
     var display_wd = $("#wdOut").val();
-    if ((0<=display_wd && display_wd<90) || (270<display_wd && display_wd<360)) wstring= "S";
-    if (90<display_wd && display_wd<=180 || (180<display_wd && display_wd<270)) wstring = "N";
+    if ((0<=display_wd && display_wd<90) || (270<display_wd && display_wd<360)) wstring= "N";
+    if (90<display_wd && display_wd<=180 || (180<display_wd && display_wd<270)) wstring = "S";
 
     if (0<display_wd && display_wd<180) wstring=wstring.concat("W");
     if (180<display_wd && display_wd<360) wstring=wstring.concat("E");

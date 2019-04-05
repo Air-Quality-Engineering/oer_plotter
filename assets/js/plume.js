@@ -10,7 +10,7 @@
 //      "Ts": temp of exhaust gas stream at stack outlet (K)
 //      "Ta": temp of the atmosphere at stack outlet (K)
 //      "Pa": atmospheric pressure at ground level (mb)
-var wd = variables["wd"]["default"]-90;
+var wd = variables["wd"]["default"];
 var ws = variables["ws"]["default"];
 var Q = variables["Q"]["default"];
 var sc= Object.keys(variables['sloc']["default"])[0] + Object.keys(variables['sc']["default"])[0];
@@ -87,7 +87,7 @@ var map;
 var zoom = 14;
 var center= {lat: latitude, lng: longitude};
 var infoWindow;
-var RADIANS =57.2957795;
+var RADIANS =Math.PI / 180;
 
 //setup chart data
 var chart;
@@ -440,7 +440,7 @@ $( document ).ready(function() {
         Ts = $("input[name='Ts']").val();
         Ta = $("input[name='Ta']").val();
         Pa = $("input[name='Pa']").val(); 
-        wd = $("input[name='wd']").val()-90;
+        wd = $("input[name='wd']").val();
         labelWindDirection();
         latitude = parseFloat($("#lat").val());
         longitude = parseFloat($("#lon").val());
