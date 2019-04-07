@@ -147,7 +147,7 @@ $( function() {
       max: 800,
       values: [ Cmin, Cmax],
       slide: function( event, ui ) {  
-        $( "#topamount" ).val( ui.values[ 0 ] +" - "+  ui.values[ 1 ] +"+");
+        $( "#topamount" ).val( ui.values[ 0 ] +" - "+  ui.values[ 1 ]+"+");
         },
         change: function( event, ui ){
             var levels = Object.keys(polution_levels);   

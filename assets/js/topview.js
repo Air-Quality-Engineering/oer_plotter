@@ -45,7 +45,6 @@ function translate_coordinates(strokeColor, zone, Us, H) {
         var olat = latitude;
         var olon = longitude;
         var rotation_angle_degs = parseInt(wd)+90;
-        console.log("rot", rotation_angle_degs);
         var ynew = [];
         var xoffset = 0;
         var yoffset = 0;
@@ -322,8 +321,8 @@ function labelWindDirection(){
     if ((0<=display_wd && display_wd<90) || (270<display_wd && display_wd<360)) wstring= "N";
     if (90<display_wd && display_wd<=180 || (180<display_wd && display_wd<270)) wstring = "S";
 
-    if (0<display_wd && display_wd<180) wstring=wstring.concat("W");
-    if (180<display_wd && display_wd<360) wstring=wstring.concat("E");
+    if (0<display_wd && display_wd<180) wstring=wstring.concat("E");
+    if (180<display_wd && display_wd<360) wstring=wstring.concat("W");
 
     $("#wdLetter").html("&#176;"+wstring);
 }
