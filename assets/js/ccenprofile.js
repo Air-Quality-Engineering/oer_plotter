@@ -6,8 +6,9 @@ var plotMaster = null;
 function c_vs_x() {
     with (Math) {
         var Us = calculateUs();
-        var deltaH = calculateDeltaH(Us);
-        var H = h + deltaH;
+        //var deltaH = calculateDeltaH(Us);
+        //var H = h + deltaH;
+        var hprime = calculateSTdownwash();
         // var z = Zinput; //convert z from the word decription to a number
         // var y = Yinput;
 
@@ -24,7 +25,20 @@ function c_vs_x() {
         var sigy =[];
         var sigz =[];
       
+        var deltaHfinal = null;
+        var Fb = calculateFb();
+        var stability = stability_map[sc[1]];
+        var Xf = calculateXf(Us,Fb,stability);
+
         for (i in x){
+                if (x[i]<Xf){
+                    var deltaH = calculateDeltaH(Us,Fb,stability, x[i]); // calculate deltah for increases until deltaHfinal
+                    deltaHfinal = deltaH;
+                }
+                else {
+                    var deltaH = deltaHfinal;
+                }
+                var H = hprime + deltaH;
                 ///STABILITY CLASS A,B,C,D,E,F WITH 'R' RURAL OR 'U' URBAN  
                 if (sc=="ra") {
                       sigy[i] = 0.22*x[i]*Math.pow((1+0.0001*x[i]), -0.5);

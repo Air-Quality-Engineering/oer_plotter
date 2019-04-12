@@ -28,19 +28,18 @@ function initMap() {
     //setTimeout(initMap,10000)
     //var a = Math.floor(Math.random() * 180);   
     var Us = calculateUs();
-    var deltaH = calculateDeltaH(Us);
-    var H = h + deltaH;
+    var hprime = calculateSTdownwash();
     // color of triangle, word to display, area with so much μg/m^3 concentration for each section
     for (l in Object.keys(polution_levels)){
-        translate_coordinates(polution_levels[l]['color'], polution_levels[l]['level'], Us, H); //yellow
+        translate_coordinates(polution_levels[l]['color'], polution_levels[l]['level'], Us, hprime);
     }
 }
 
-function translate_coordinates(strokeColor, zone, Us, H) {
-    with (Math) {
+function translate_coordinates(strokeColor, zone, Us, hprime) {
+    with (Math) { 
                  // var xx, yy, r, ct, st, angle;
         var z_num; //convert z from the word decription to a number
-        if (z=="plume") z_num = H;
+        if (z=="plume") z_num = hprime;
         else if (z=="ground") z_num=0;
         var olat = latitude;
         var olon = longitude;
@@ -54,6 +53,11 @@ function translate_coordinates(strokeColor, zone, Us, H) {
         var triangleCoords1 = [];
         var bounceCoords = [];
         var bounce_y = [];
+
+        var deltaHfinal = null;
+        var Fb = calculateFb();
+        var stability = stability_map[sc[1]];
+        var Xf = calculateXf(Us,Fb,stability);
 
     //x = [10, 100, 1000, 5000, 10000];
         var x = [0, 2];
@@ -86,6 +90,16 @@ function translate_coordinates(strokeColor, zone, Us, H) {
         var blatLng = {};
         
         for (i in x){
+                // calculate deltah for increases until deltaHfinal
+                if (x[i]<Xf){
+                    var deltaH = calculateDeltaH(Us,Fb,stability, x[i]); 
+                    deltaHfinal = deltaH;
+                }
+                else {
+                    var deltaH = deltaHfinal;
+                }
+                var H = hprime + deltaH;
+
                 ///STABILITY CLASS A,B,C,D,E,F WITH 'R' RURAL OR 'U' URBAN  
                 if (sc=="ra") {
                  sigy[i] = 0.22*x[i]*Math.pow((1+0.0001*x[i]), -0.5);

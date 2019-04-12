@@ -68,6 +68,15 @@ var P = {
     "rf": 0.55
 }
 
+var stability_map = {
+    'a': 'unstable',
+    'b': 'unstable',
+    'c': 'unstable',
+    'd': 'neutral',
+    'e': 'stable',
+    'f': 'stable',
+}
+
 // API key from https://github.com/touhid55/GaussianPlume
 var config = {
   apiKey: "AIzaSyBuqgAHTym57lDY8g6e8Xuf80E2s8mw-9A",
@@ -98,24 +107,95 @@ var pro_plot = [[]];
 
 
 // Us is wind speed at height h (at stack opening)
-// h is stack height
-// Z1 is height of meteorological tower
+// h is stack height (m)
+// Z1 is height of meteorological tower (m)
 // P is function of atmospheric stability
-// ws is wind speed from measured tower
+// ws is wind speed from measured tower (m/sec)
 function calculateUs(){
     var Us = ws*(Math.pow((h/Z1),P[sc]));
     return Us
 };
 
+// to compensate for stack-tip downwash for effective height of h
+function calculateSTdownwash(){
+    var hprime = h;
+    if ((Vs/ws) < 1.5){
+        hprime = hprime + 2*ds*((Vs/ws)-1.5);
+    }
+    return hprime;
+}
+
+// computation for buoyancy flux parameter, Fb, that will be needed to determine buoyancy plume rise
+//  "Vs": vertical stack gas velocity (m/sec)
+//  "ds": inside diameter of stack (m)
+//  "Ts": temp of exhaust gas stream at stack outlet (K)
+//  "Ta": temp of the atmosphere at stack outlet (K)
+function calculateFb(){
+    var deltaT = Ts-Ta;
+    var Fb = (9.8*Vs*ds*ds*deltaT)/(4*Ts);
+    return Fb;
+}
+
+// the distance to final rise, xf, in meters where the plume levels off
+// Us is wind speed at height h (at stack opening)
+// Fb is buoyancy flux parameter
+//  "Ts": temp of exhaust gas stream at stack outlet (K)
+//  "Ta": temp of the atmosphere at stack outlet (K)
+//  "Vs": vertical stack gas velocity (m/sec)
+//  "Us": wind speed at stack opening (m/sec)
+function calculateXf(Us, Fb, stability){
+    if (stability!='stable'){
+        var xf_momentum = (4*ds*Math.pow(Us*(Vs+(3*Us)), 2)*Ts)/(Math.pow(Us,3)*Vs*Ta);
+        if (Fb<55){
+            var xf_buoyant = 49*Math.pow(Fb, 0.625);
+        }
+        else{
+            var xf_buoyant = 119*Math.pow(Fb, 0.4);
+        }      
+    }
+    else { //stable
+        if (sc[1]=='e'){
+            var s_factor = (9.8/Ta)*0.02;
+        }
+        else if (sc[1]=='f'){
+            var s_factor = (9.8/Ta)*0.0035;
+        }
+        var inner = 1.73*Math.pow((1/3)+(Us/Vs),2);
+        var xf_momentum = Us*Math.pow(s_factor,-0.5)*Math.asin(inner);
+        var xf_buoyant = 2.07*Us*Math.pow(s_factor,-0.5);
+    }
+    return Math.max(xf_momentum,xf_buoyant);
+}
+
+
 //  deltaH is the Plume Rise in meters
+//  for gradual or transitional rise before a distance xf
 //  "Vs": vertical stack gas velocity (m/sec)
 //  "ds": inside diameter of stack (m)
 //  "Ts": temp of exhaust gas stream at stack outlet (K)
 //  "Ta": temp of the atmosphere at stack outlet (K)
 //  "Pa": atmospheric pressure at ground level (mb)
-function calculateDeltaH(Us){
-    var deltaH = ((Vs*ds)/Us)*(1.5+ 0.00268*Pa*ds*((Ts-Ta)/Ts));
-    return deltaH
+//  "Fb": buoyancy flux, m^4/s^2
+//  "Us": wind speed at stack opening (m/sec)
+function calculateDeltaH(Us, Fb, stability,x_down){
+    var deltaH_buoyant = (1.6*Math.pow(Fb,1/3)*Math.pow(x_down,2/3))/Us;
+    if (stability != "stable"){   
+        var deltaH_momentum = 1.89*Math.pow((ds*Math.pow(Vs,2))/(Us*(Vs+3*Us)), 2/3)*Math.pow((Ta*x_down)/Ts, 1/3);
+    }
+    else{ //stable
+        if (sc[1]=='e'){
+            var s_factor = (9.8/Ta)*0.02;
+        }
+        else if (sc[1]=='f'){
+            var s_factor = (9.8/Ta)*0.0035;
+        }
+        var numer = 3*Math.pow(ds,2)*Math.pow(Vs,2)*Ta*Math.sin((Math.pow(s_factor,0.5)*x_down)/Us);
+        var denom = 4*Ta*Math.pow((1/3)+(Us/Vs),2)*Us*Math.pow(s_factor,0.5);
+        var deltaH_momentum = Math.pow(numer/denom, 1/3);
+    }
+
+    //var deltaH = ((Vs*ds)/Us)*(1.5+ 0.00268*Pa*ds*((Ts-Ta)/Ts)); //OLD CONSTANT WAY
+    return Math.max(deltaH_buoyant,deltaH_momentum);
 }
 
 // before plume hit's the ground
@@ -442,7 +522,6 @@ $( document ).ready(function() {
         console.log("change");
         ws = parseInt($("input[name='ws']").val());
         Q = parseInt($("input[name='Q']").val());
-        h = parseInt($("input[name='h']").val());
         restrictZinput();
         Xmax = $("input[name='Xmax']").val();
         Zinput = $("input[name='Zinput']").val(); 
@@ -454,6 +533,7 @@ $( document ).ready(function() {
         Ta = $("input[name='Ta']").val();
         Pa = $("input[name='Pa']").val(); 
         wd = $("input[name='wd']").val();
+        h = parseInt($("input[name='h']").val());
         labelWindDirection();
         latitude = parseFloat($("#lat").val());
         longitude = parseFloat($("#lon").val());

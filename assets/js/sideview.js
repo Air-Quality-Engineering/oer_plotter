@@ -4,15 +4,16 @@ var Zmax = 500;  // for vertical axis limit
 
 function initPlot() {
     var Us = calculateUs();
-    var deltaH = calculateDeltaH(Us);
-    var H = h + deltaH;
+    var hprime = calculateSTdownwash();
+    //var deltaH = calculateDeltaH(Us);
+    //var H = h + deltaH;
 
-    make_plot( Us, H);
+    make_plot( Us, hprime);
     
 }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function make_plot(Us, H) {
+function make_plot(Us, hprime) {
     with (Math) {
         to_plot = [[ 'ID', 'X', 'Z', 'Concentration']]; // reset data
         var y = Yinput; // sideview from y=0
@@ -22,7 +23,7 @@ function make_plot(Us, H) {
              x.push(x[k]+10);  
              k=k+1;
         }
-        Zmax = H+350;
+        Zmax = hprime+350;
         var z = [0, 5];
         var k = 1;
         while (z[k] < Zmax-1){
@@ -31,8 +32,22 @@ function make_plot(Us, H) {
         }
 
         var sigy =[];
-        var sigz =[];    
+        var sigz =[];   
+
+        var deltaHfinal = null;
+        var Fb = calculateFb();
+        var stability = stability_map[sc[1]];
+        var Xf = calculateXf(Us,Fb,stability); 
         for (i in x){
+                if (x[i]<Xf){
+                    var deltaH = calculateDeltaH(Us,Fb,stability, x[i]); // calculate deltah for increases until deltaHfinal
+                    deltaHfinal = deltaH;
+                }
+                else {
+                    var deltaH = deltaHfinal;
+                }
+                var H = hprime + deltaH;
+
                 ///STABILITY CLASS A,B,C,D,E,F WITH 'R' RURAL OR 'U' URBAN  
                 if (sc=="ra") {
                       sigy[i] = 0.22*x[i]*Math.pow((1+0.0001*x[i]), -0.5);
