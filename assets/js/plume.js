@@ -522,6 +522,7 @@ $( document ).ready(function() {
         console.log("change");
         ws = parseInt($("input[name='ws']").val());
         Q = parseInt($("input[name='Q']").val());
+        h = parseInt($("input[name='h']").val());
         restrictZinput();
         Xmax = $("input[name='Xmax']").val();
         Zinput = $("input[name='Zinput']").val(); 
@@ -533,7 +534,6 @@ $( document ).ready(function() {
         Ta = $("input[name='Ta']").val();
         Pa = $("input[name='Pa']").val(); 
         wd = $("input[name='wd']").val();
-        h = parseInt($("input[name='h']").val());
         labelWindDirection();
         latitude = parseFloat($("#lat").val());
         longitude = parseFloat($("#lon").val());
