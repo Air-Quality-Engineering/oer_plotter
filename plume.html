@@ -80,6 +80,7 @@
         font-size:large;
         width:70px;
       }
+
       .userdata{
             margin-bottom: 10px;
       }
@@ -93,6 +94,14 @@
           z-index: 10;
           background-color: white;
         }
+
+        .conc_nums{
+        font-size:medium; 
+        border:0; 
+        color: #2c2d2c; 
+        font-weight:bold;
+        width:45px;
+      }
 
      /* NAVBAR  */   
     ul.navbar {
@@ -227,17 +236,20 @@
           </div>
           <p>
               <label for="topamount">Concentration range:</label>
-              <input type="text" id="topamount"  style="font-size:medium; border:0; color: #2c2d2c; font-weight:bold;">
+              <input class="conc_nums" type="number" min=1 max=800 id="topCmin" > - 
+              <input class="conc_nums" type="number" min=1 max=800 id="topCmax" >
             </p>
              
-            <div style = "margin-bottom:5px;" id="topslider-range"></div>
+            <div id="topslider-range" style = "margin-bottom:5px;" ></div>
         </div>
+
 
         <div class='sideview concentration'>   <!-- for sideview  -->   
           <label for="amount">Concentration range:</label>
-          <input type="text" id="amount"  style="width: 100px; font-size:medium; border:0; color: #2c2d2c; font-weight:bold;">
+          <input class="conc_nums" type="number" min=1 max=800 id="sideCmin" > - 
+          <input class="conc_nums" type="number" min=1 max=800 id="sideCmax" >+
            <br>
-            <div style = "margin-top:5px;" id="slider-range"></div>
+            <div id="slider-range" style = "margin-top:5px;" ></div>
         </div>
 
         <div class="sideview" id="chart_div"></div> <!-- //sidevioew -->

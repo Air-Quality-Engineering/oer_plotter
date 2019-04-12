@@ -139,7 +139,7 @@ function C_eq2(Q, sigy, sigz, Us, y, z, H) {
     return c;
 };
 
-
+// MAPVIEW CONCENTRATION SLIDER
 $( function() {
     $( "#topslider-range" ).slider({
       range: true,
@@ -147,27 +147,31 @@ $( function() {
       max: 800,
       values: [ Cmin, Cmax],
       slide: function( event, ui ) {  
-        $( "#topamount" ).val( ui.values[ 0 ] +" - "+  ui.values[ 1 ]+"+");
+        $( "#topCmin" ).val( ui.values[ 0 ]);
+        $( "#topCmax" ).val( ui.values[ 1 ]);
         },
         change: function( event, ui ){
-            var levels = Object.keys(polution_levels);   
-            Cmin = ui.values[ 0 ];
-            Cmax = ui.values[ 1 ];
-            var multiplier = Math.floor((Cmax-Cmin)/(levels.length+1));
-            for (var i=0; i<levels.length/2 ;i++){
-                 polution_levels[i]['level']=Cmin+(i*multiplier);
+            if ($('.topview').css("display")=="block"){
+                var levels = Object.keys(polution_levels);   
+                Cmin = ui.values[ 0 ];
+                Cmax = ui.values[ 1 ];
+                var multiplier = Math.floor((Cmax-Cmin)/(levels.length+1));
+                for (var i=0; i<levels.length/2 ;i++){
+                     polution_levels[i]['level']=Cmin+(i*multiplier);
+                }
+                for (var i=levels.length-1, j=0; i>=levels.length/2; i--){
+                     polution_levels[i]['level']=Cmax-(j*multiplier);
+                     j = j+1;
+                }
+                drawNewMap();  
             }
-            for (var i=levels.length-1, j=0; i>=levels.length/2; i--){
-                 polution_levels[i]['level']=Cmax-(j*multiplier);
-                 j = j+1;
-            }
-            drawNewMap();  
         }
     });
-    $( "#topamount" ).val( $( "#topslider-range" ).slider( "values", 0 ) +
-      " - " + $( "#topslider-range" ).slider( "values", 1 )+"+") ; // initially
+    $( "#topCmin" ).val( $( "#topslider-range" ).slider( "values", 0 ) ); // initially
+    $( "#topCmax" ).val( $( "#topslider-range" ).slider( "values", 1 ) ); 
   });
 
+// SIDEVIEW CONCENTRATION SLIDER
 $( function() {
     $( "#slider-range" ).slider({
       range: true,
@@ -175,7 +179,8 @@ $( function() {
       max: 800,
       values: [ Cmin, Cmax ],
       slide: function( event, ui ) {
-        $( "#amount" ).val( ui.values[ 0 ] +" - "+  ui.values[ 1 ] +"+");   
+        $( "#sideCmin" ).val( ui.values[ 0 ]);
+        $( "#sideCmax" ).val( ui.values[ 1 ]);
         },
         change: function( event, ui ){
             if ($(".sideview").css("display")!="none"){
@@ -185,8 +190,8 @@ $( function() {
             }
         }
     });
-    $( "#amount" ).val( $( "#slider-range" ).slider( "values", 0 ) +
-      " - " + $( "#slider-range" ).slider( "values", 1 )+"+") ; // initially
+    $( "#sideCmin" ).val( $( "#slider-range" ).slider( "values", 0 ) ); // initially
+    $( "#sideCmax" ).val( $( "#slider-range" ).slider( "values", 1 ) ); 
   });
 
 
@@ -224,7 +229,6 @@ function show_ccenprofile(){
         c_vs_x();
     } 
 }
-
 
 // function load_model(){
 //     $("#about").css("display", "block");
@@ -413,6 +417,15 @@ $( document ).ready(function() {
         tis = $(this);
         $(this).closest("a").addClass("active");
     });
+    // concentration user text edits
+    $(".conc_nums").on('change', function(){
+        var range_obj = $(this).attr("id");
+        if (range_obj=="topCmin") $( "#topslider-range" ).slider( "values", 0, $(this).val());
+        if (range_obj=="topCmax") $( "#topslider-range" ).slider( "values", 1, $(this).val());
+        if (range_obj=="sideCmin") $( "#slider-range" ).slider( "values", 0, $(this).val());
+        if (range_obj=="sideCmax") $( "#slider-range" ).slider( "values", 1, $(this).val());
+    })
+
     // selects need individual listeners
     $("#z").on('change', function(){
         z = $(this).val();
