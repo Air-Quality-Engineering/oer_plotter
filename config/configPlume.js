@@ -153,5 +153,11 @@ var variables = {
             "default": {"u":"U"},
             "other_options": {"r":"R"}, //{option value: option textdisplayed}      
             "type": "select"
-        }
+        },
+        'deltaHapproach': { 
+            "label": "delta_h calculation approach: ",
+            "default": {"holland":"Holland Equation"},
+            "other_options": {"briggs":"Briggs Approach"}, //{option value: option textdisplayed}                                 
+            "type": "select"
+        },
     };

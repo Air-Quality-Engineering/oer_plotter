@@ -6,9 +6,12 @@ var plotMaster = null;
 function c_vs_x() {
     with (Math) {
         var Us = calculateUs();
-        //var deltaH = calculateDeltaH(Us);
-        //var H = h + deltaH;
-        var hprime = calculateSTdownwash();
+        if (deltaHapproach=="briggs"){
+            var hprime = calculateSTdownwash();
+        }
+        else{
+            var hprime = h;
+        }
         // var z = Zinput; //convert z from the word decription to a number
         // var y = Yinput;
 
@@ -20,23 +23,32 @@ function c_vs_x() {
         while (x[k] < Xmax-10){
              x.push(x[k]+1);  
              k=k+1;
-        }
-        
+        }        
         var sigy =[];
         var sigz =[];
       
-        var deltaHfinal = null;
-        var Fb = calculateFb();
-        var stability = stability_map[sc[1]];
-        var Xf = calculateXf(Us,Fb,stability);
+
+        //BRIGGS APPROACH for delta_h
+        if (deltaHapproach=="briggs"){
+            var Fb = calculateFb();
+            var stability = stability_map[sc[1]];
+            var Xf = calculateXf(Us,Fb,stability); 
+        }
 
         for (i in x){
-                if (x[i]<Xf){
-                    var deltaH = calculateDeltaH(Us,Fb,stability, x[i]); // calculate deltah for increases until deltaHfinal
-                    deltaHfinal = deltaH;
+                //BRIGGS APPROACH for delta_h
+                if (deltaHapproach=="briggs"){
+                    //BRIGGS APPROACH for delta_h
+                    // calculate deltah for increases until x=>Xf (deltaHfinal) and after
+                    if (x[i]<Xf){
+                        var deltaH = calculateDeltaHrise(Us,Fb,stability, x[i]); 
+                    }
+                    else {
+                        var deltaH = calculateDeltaHfinal(Us,Fb,stability, x[i]);
+                    }
                 }
-                else {
-                    var deltaH = deltaHfinal;
+                else { // HOLLAND EQUATION
+                    var deltaH = calculateDeltaHholland(Us);
                 }
                 var H = hprime + deltaH;
                 ///STABILITY CLASS A,B,C,D,E,F WITH 'R' RURAL OR 'U' URBAN  

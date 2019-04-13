@@ -14,6 +14,7 @@ var wd = variables["wd"]["default"];
 var ws = variables["ws"]["default"];
 var Q = variables["Q"]["default"];
 var sc= Object.keys(variables['sloc']["default"])[0] + Object.keys(variables['sc']["default"])[0];
+var deltaHapproach = Object.keys(variables['deltaHapproach']["default"])[0];
 var latitude = variables["lat"]["default"];
 var longitude = variables["lon"]["default"];
 var h = variables["h"]["default"];
@@ -37,9 +38,9 @@ var Cmax = 250; // set initaly but updated by user with slider
 // var polution_min = 5;
 
 var export_vars= {
-    'profile': ["Q", "ws", "h","Xmax","Z1","Vs","ds","Ts","Ta","Pa", "sc", "Zinput", "Yinput"],
-    'side': ["Q", "ws", "h","Xmax","Z1","Vs","ds","Ts","Ta","Pa","sc", "Yinput", "Cmin", "Cmax"],
-    'top': [ "Q", "ws", "wd", "h","Xmax","Z1","Vs","ds","Ts","Ta","Pa", "z", "sc", "latitude", "longitude", "Cmin", "Cmax"]
+    'profile': ["Q", "ws", "h", "deltaHapproach", "Xmax","Z1","Vs","ds","Ts","Ta","Pa", "sc", "Zinput", "Yinput"],
+    'side': ["Q", "ws", "h", "deltaHapproach", "Xmax","Z1","Vs","ds","Ts","Ta","Pa","sc", "Yinput", "Cmin", "Cmax"],
+    'top': [ "Q", "ws", "wd", "h", "deltaHapproach", "Xmax","Z1","Vs","ds","Ts","Ta","Pa", "z", "sc", "latitude", "longitude", "Cmin", "Cmax"]
 }
 
 var polution_levels = {
@@ -118,9 +119,9 @@ function calculateUs(){
 
 // to compensate for stack-tip downwash for effective height of h
 function calculateSTdownwash(){
-    var hprime = h;
-    if ((Vs/ws) < 1.5){
-        hprime = hprime + 2*ds*((Vs/ws)-1.5);
+    var hprime = h; 
+    if ((Vs/ws) < 1.5){ //eq. 4-1
+        hprime = hprime + 2*ds*((Vs/ws)-1.5); //eq. 4-2
     }
     return hprime;
 }
@@ -132,7 +133,7 @@ function calculateSTdownwash(){
 //  "Ta": temp of the atmosphere at stack outlet (K)
 function calculateFb(){
     var deltaT = Ts-Ta;
-    var Fb = (9.8*Vs*ds*ds*deltaT)/(4*Ts);
+    var Fb = (9.8*Vs*ds*ds*deltaT)/(4*Ts); //eq.4-3
     return Fb;
 }
 
@@ -145,26 +146,26 @@ function calculateFb(){
 //  "Us": wind speed at stack opening (m/sec)
 function calculateXf(Us, Fb, stability){
     if (stability!='stable'){
-        var xf_momentum = (4*ds*Math.pow(Us*(Vs+(3*Us)), 2)*Ts)/(Math.pow(Us,3)*Vs*Ta);
+        var xf_momentum = (4*ds*Math.pow(Us*(Vs+(3*Us)), 2)*Ts)/(Math.pow(Us,3)*Vs*Ta); //eq.4-16
         if (Fb<55){
-            var xf_buoyant = 49*Math.pow(Fb, 0.625);
+            var xf_buoyant = 49*Math.pow(Fb, 0.625); //eq. 4-13
         }
         else{
-            var xf_buoyant = 119*Math.pow(Fb, 0.4);
+            var xf_buoyant = 119*Math.pow(Fb, 0.4); //eq. 4-14
         }      
     }
     else { //stable
         if (sc[1]=='e'){
-            var s_factor = (9.8/Ta)*0.02;
+            var s_factor = (9.8/Ta)*0.02; //eq. 4-7
         }
         else if (sc[1]=='f'){
             var s_factor = (9.8/Ta)*0.0035;
         }
         var inner = 1.73*Math.pow((1/3)+(Us/Vs),2);
-        var xf_momentum = Us*Math.pow(s_factor,-0.5)*Math.asin(inner);
-        var xf_buoyant = 2.07*Us*Math.pow(s_factor,-0.5);
+        var xf_momentum = Us*Math.pow(s_factor,-0.5)*Math.asin(inner); //eq.4-17
+        var xf_buoyant = 2.07*Us*Math.pow(s_factor,-0.5); //eq.4-15
     }
-    return Math.max(xf_momentum,xf_buoyant);
+    return Math.max(xf_momentum,xf_buoyant); // return the greater
 }
 
 
@@ -177,25 +178,74 @@ function calculateXf(Us, Fb, stability){
 //  "Pa": atmospheric pressure at ground level (mb)
 //  "Fb": buoyancy flux, m^4/s^2
 //  "Us": wind speed at stack opening (m/sec)
-function calculateDeltaH(Us, Fb, stability,x_down){
-    var deltaH_buoyant = (1.6*Math.pow(Fb,1/3)*Math.pow(x_down,2/3))/Us;
+function calculateDeltaHrise(Us, Fb, stability,x_down){
+    var deltaH_buoyant = (1.6*Math.pow(Fb,1/3)*Math.pow(x_down,2/3))/Us; //eq. 4-18
     if (stability != "stable"){   
+        // eq. 4-19
         var deltaH_momentum = 1.89*Math.pow((ds*Math.pow(Vs,2))/(Us*(Vs+3*Us)), 2/3)*Math.pow((Ta*x_down)/Ts, 1/3);
     }
     else{ //stable
         if (sc[1]=='e'){
-            var s_factor = (9.8/Ta)*0.02;
+            var s_factor = (9.8/Ta)*0.02; //eq.4-7
         }
         else if (sc[1]=='f'){
             var s_factor = (9.8/Ta)*0.0035;
         }
+        var Bj = (1/3)+(Us/Vs); // eq. 4-21
         var numer = 3*Math.pow(ds,2)*Math.pow(Vs,2)*Ta*Math.sin((Math.pow(s_factor,0.5)*x_down)/Us);
-        var denom = 4*Ta*Math.pow((1/3)+(Us/Vs),2)*Us*Math.pow(s_factor,0.5);
-        var deltaH_momentum = Math.pow(numer/denom, 1/3);
+        var denom = 4*Ta*Math.pow(Bj,2)*Us*Math.pow(s_factor,0.5);
+        var deltaH_momentum = Math.pow(numer/denom, 1/3); //eq. 4-20
+    }
+
+    //var deltaH = ((Vs*ds)/Us)*(1.5+ 0.00268*Pa*ds*((Ts-Ta)/Ts)); //OLD WAY (HOLLAND EQUATION)
+    return Math.max(deltaH_buoyant,deltaH_momentum); //return the greater
+}
+
+//  deltaH is the final Plume Rise in meters
+//  after a distance xf
+//  "Vs": vertical stack gas velocity (m/sec)
+//  "ds": inside diameter of stack (m)
+//  "Ts": temp of exhaust gas stream at stack outlet (K)
+//  "Ta": temp of the atmosphere at stack outlet (K)
+//  "Pa": atmospheric pressure at ground level (mb)
+//  "Fb": buoyancy flux, m^4/s^2
+//  "Us": wind speed at stack opening (m/sec)
+function calculateDeltaHfinal(Us, Fb, stability,x_down){
+    if (stability != "stable"){   
+        if (Fb<55){
+            var deltaH_buoyant = (21.425*Math.pow(Fb, 0.75))/Us; //eq. 4-5
+        }
+        else{
+            var deltaH_buoyant = (38.71*Math.pow(Fb, 0.6))/Us; //eq. 4-4
+        }
+        var deltaH_momentum = (3*ds*Vs)/Us; //eq. 4-6
+        
+    }
+    else{ //stable
+        if (sc[1]=='e'){
+            var s_factor = (9.8/Ta)*0.02; // eq. 4-7
+        }
+        else if (sc[1]=='f'){
+            var s_factor = (9.8/Ta)*0.0035;
+        }
+        var deltaH_buoyant = 2.6*Math.pow(Fb/(Us*s_factor), 1/3); // Eq. 4-8
+        var deltaH_momentum = 1.5*Math.pow((Math.pow(ds,2)*Math.pow(Vs,2)*Ta)/(4*Ts*Us), 1/3)*Math.pow(s_factor,(-1/6)); //eq. 4-9
     }
 
     //var deltaH = ((Vs*ds)/Us)*(1.5+ 0.00268*Pa*ds*((Ts-Ta)/Ts)); //OLD CONSTANT WAY
     return Math.max(deltaH_buoyant,deltaH_momentum);
+}
+
+// HOLLAND EQUATION
+//  deltaH is the Plume Rise in meters
+//  "Vs": vertical stack gas velocity (m/sec)
+//  "ds": inside diameter of stack (m)
+//  "Ts": temp of exhaust gas stream at stack outlet (K)
+//  "Ta": temp of the atmosphere at stack outlet (K)
+//  "Pa": atmospheric pressure at ground level (mb)
+function calculateDeltaHholland(Us){
+    var deltaH = ((Vs*ds)/Us)*(1.5+ 0.00268*Pa*ds*((Ts-Ta)/Ts));
+    return deltaH
 }
 
 // before plume hit's the ground
@@ -446,6 +496,9 @@ function exportData(){
         else if (val=="z"){
             args.push(["z-axis", z]);
         }
+        else if (val=="deltaHapproach"){
+            args.push(["delta_h approach", deltaHapproach]);
+        }
         
     });
     args.push(['','']); /// 2 blank rows
@@ -517,6 +570,12 @@ $( document ).ready(function() {
         sc = sloc+cl;
         updateView(); 
     });
+    $("#deltaHapproach").on('change', function(){
+        deltaHapproach = $(this).val();
+        //console.log(deltaHapproach);
+        updateView(); 
+    });
+
 
     $('#data').on('change', 'input', 'select', function () {
         console.log("change");

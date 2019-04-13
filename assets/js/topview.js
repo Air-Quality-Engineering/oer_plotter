@@ -28,7 +28,12 @@ function initMap() {
     //setTimeout(initMap,10000)
     //var a = Math.floor(Math.random() * 180);   
     var Us = calculateUs();
-    var hprime = calculateSTdownwash();
+    if (deltaHapproach=="briggs"){
+        var hprime = calculateSTdownwash();
+    }
+    else{
+        var hprime = h;
+    }
     // color of triangle, word to display, area with so much μg/m^3 concentration for each section
     for (l in Object.keys(polution_levels)){
         translate_coordinates(polution_levels[l]['color'], polution_levels[l]['level'], Us, hprime);
@@ -54,10 +59,12 @@ function translate_coordinates(strokeColor, zone, Us, hprime) {
         var bounceCoords = [];
         var bounce_y = [];
 
-        var deltaHfinal = null;
-        var Fb = calculateFb();
-        var stability = stability_map[sc[1]];
-        var Xf = calculateXf(Us,Fb,stability);
+        //BRIGGS APPROACH for delta_h
+        if (deltaHapproach=="briggs"){
+            var Fb = calculateFb();
+            var stability = stability_map[sc[1]];
+            var Xf = calculateXf(Us,Fb,stability); 
+        }
 
     //x = [10, 100, 1000, 5000, 10000];
         var x = [0, 2];
@@ -90,13 +97,18 @@ function translate_coordinates(strokeColor, zone, Us, hprime) {
         var blatLng = {};
         
         for (i in x){
-                // calculate deltah for increases until deltaHfinal
-                if (x[i]<Xf){
-                    var deltaH = calculateDeltaH(Us,Fb,stability, x[i]); 
-                    deltaHfinal = deltaH;
+                if (deltaHapproach=="briggs"){
+                    //BRIGGS APPROACH for delta_h
+                    // calculate deltah for increases until x=>Xf (deltaHfinal) and after
+                    if (x[i]<Xf){
+                        var deltaH = calculateDeltaHrise(Us,Fb,stability, x[i]); 
+                    }
+                    else {
+                        var deltaH = calculateDeltaHfinal(Us,Fb,stability, x[i]);
+                    }
                 }
-                else {
-                    var deltaH = deltaHfinal;
+                else { // HOLLAND EQUATION
+                    var deltaH = calculateDeltaHholland(Us);
                 }
                 var H = hprime + deltaH;
 

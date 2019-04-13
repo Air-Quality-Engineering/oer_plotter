@@ -4,7 +4,12 @@ var Zmax = 500;  // for vertical axis limit
 
 function initPlot() {
     var Us = calculateUs();
-    var hprime = calculateSTdownwash();
+    if (deltaHapproach=="briggs"){
+        var hprime = calculateSTdownwash();
+    }
+    else{
+        var hprime = h;
+    }
     //var deltaH = calculateDeltaH(Us);
     //var H = h + deltaH;
 
@@ -34,17 +39,25 @@ function make_plot(Us, hprime) {
         var sigy =[];
         var sigz =[];   
 
-        var deltaHfinal = null;
-        var Fb = calculateFb();
-        var stability = stability_map[sc[1]];
-        var Xf = calculateXf(Us,Fb,stability); 
+        //BRIGGS APPROACH for delta_h
+        if (deltaHapproach=="briggs"){
+            var Fb = calculateFb();
+            var stability = stability_map[sc[1]];
+            var Xf = calculateXf(Us,Fb,stability); 
+        }
         for (i in x){
-                if (x[i]<Xf){
-                    var deltaH = calculateDeltaH(Us,Fb,stability, x[i]); // calculate deltah for increases until deltaHfinal
-                    deltaHfinal = deltaH;
+                if (deltaHapproach=="briggs"){
+                    //BRIGGS APPROACH for delta_h
+                    // calculate deltah for increases until x=>Xf (deltaHfinal) and after
+                    if (x[i]<Xf){
+                        var deltaH = calculateDeltaHrise(Us,Fb,stability, x[i]); 
+                    }
+                    else {
+                        var deltaH = calculateDeltaHfinal(Us,Fb,stability, x[i]);
+                    }
                 }
-                else {
-                    var deltaH = deltaHfinal;
+                else { // HOLLAND EQUATION
+                    var deltaH = calculateDeltaHholland(Us);
                 }
                 var H = hprime + deltaH;
 
